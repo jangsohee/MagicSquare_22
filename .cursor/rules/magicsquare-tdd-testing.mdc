@@ -1,0 +1,49 @@
+---
+description: MagicSquare Dual-Track TDD·pytest·통합 테스트
+globs: "tests/**/*.py"
+alwaysApply: false
+---
+
+# TDD & Testing
+
+## Dual-Track
+
+| Track | Path | Start | Mock |
+|-------|------|-------|------|
+| Logic | `tests/entity/` | DT-01 | 없음 |
+| UI | `tests/boundary/` | UT-01 | Domain Mock OK |
+| Data | `tests/data/` | ST-01 | 없음 |
+| Integration | `tests/integration/` | IT-OK-01 | Domain Mock **금지** |
+
+## Cycle
+
+1. **Red** — TC-ID 1개 실패 테스트, pytest FAIL 확인
+2. **Green** — 해당 1개 PASS 최소 구현 (리팩터 금지)
+3. **Refactor** — Green 유지, observable behavior 불변
+
+## pytest + AAA
+
+```python
+def test_dt01_complete_magic_is_valid():
+    grid = FIX_MAGIC          # Arrange
+    result = is_magic_square(grid)  # Act
+    assert result is True     # Assert
+```
+
+## MUST
+
+- 이름: `test_{tc_id}_{behavior}`
+- FIX-MAGIC: `tests/conftest.py` (module scope)
+- Error message assert: **완전 문자열 일치**
+- Integration: 실 Domain + 실 Boundary; IT-OK-01~03, IT-FAIL-01~05
+- 커버리지: 전체 ≥80%, entity ≥95%, boundary ≥85%, data ≥80%
+
+## MUST NOT
+
+- Red 없이 `src/` 추가
+- assert 완화·`skip`·`xfail`
+- integration에서 Domain Mock·Boundary 검증 우회
+
+## References
+
+- `Report/02-tdd-design-report.md` §1.5, §2.3, §4.4
