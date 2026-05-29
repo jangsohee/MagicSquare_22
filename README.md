@@ -227,7 +227,7 @@ MagicSquare_/
 - [x] **Golden Master 회귀** — GM-TC-01~05 · approve (Report/15)
 - [x] **REFACTOR 사전 분석·계획** — ECB · SRP · 테스트 갭 (Report/16)
 - [x] REFACTOR ① 레이어·계약 — envelope · facade · E001/MagicConstant SSOT (DEF-002·003)
-- [ ] REFACTOR ② 테스트·안전 — Control/Boundary/GUI 회귀 테스트 · Guard · fixture
+- [x] REFACTOR ② 테스트·안전 — Control/Boundary/GUI 회귀 테스트 · Guard · fixture
 - [ ] REFACTOR ③ 구조·유지보수 — presenter · DI · UI DRY (P1/P2)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
@@ -261,7 +261,7 @@ MagicSquare_/
 | `tests/integration/test_it_ok_solve.py` | **3 passed** | I-02 Green ✅ |
 | `tests/integration/test_golden_master_magic_square.py` | **6 passed** | GM-TC-01~05 + baseline ✅ |
 | `tests/integration/` | **12 passed** | I-01~I-02 + Golden Master ✅ |
-| **전체 suite** | **60 passed** | Green 13/13 + GM ✅ |
+| **전체 suite** | **70 passed** | Green 13/13 + GM + REFACTOR ② ✅ |
 
 **Green 13/13 + Golden Master 완료** — REFACTOR 구현(P0) · 커버리지 gate · DEF-002 SSOT는 후속 ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md)).
 
@@ -435,7 +435,7 @@ MagicSquare_/
 - [x] **Integration Green** — I-01~I-02 완료
 - [ ] Boundary 레이어 커버리지 **85%+**
 - [ ] Domain Logic 커버리지 **95%+**
-- [x] 전체 pytest 회귀 통과: `python -m pytest -v` → **60 passed** (GM 포함)
+- [x] 전체 pytest 회귀 통과: `python -m pytest -v` → **70 passed** (GM 포함)
 
 ### Green 진행 흐름
 
@@ -478,11 +478,11 @@ A-08 SUCCESS ✅ ◄──────────────┘
 
 ### ② 테스트 · 안전 (회귀 게이트)
 
-- [ ] `tests/control/test_solve_partial_execute.py` — `SolvePartialMagicSquare.execute`
-- [ ] `tests/boundary/test_ui_boundary.py` — U-OUT · U-FLOW · UT-09 (`UIBoundary` 직접)
-- [ ] `tests/boundary/gui/test_main_window.py` — offscreen PyQt · OK/ERROR envelope 표시
-- [ ] `main_window.py` — `except Exception` 제거 · envelope 분기만
-- [ ] `EXAMPLE_GRID` → `tests/conftest.py` (Screen fixture 제거)
+- [x] `tests/control/test_solve_partial_execute.py` — `SolvePartialMagicSquare.execute`
+- [x] `tests/boundary/test_ui_boundary.py` — U-OUT · U-FLOW · UT-09 (`UIBoundary` 직접)
+- [x] `tests/boundary/gui/test_main_window.py` — offscreen PyQt · OK/ERROR envelope 표시
+- [x] `main_window.py` — `except Exception` 제거 · envelope 분기만
+- [x] `EXAMPLE_GRID` → `example_grids` + `tests/conftest.py` fixture (Screen literal 제거)
 
 ### ③ 구조 · 유지보수 (SRP · DRY · 명명)
 
@@ -512,7 +512,7 @@ A-08 SUCCESS ✅ ◄──────────────┘
 - **`pytest-cov` CI** — 커버리지 gate 미구성
 - **DEF-001** — **해소** — boundary · control · data · integration · gui
 - **DEF-002·003** — **해소** (REFACTOR ① — `ERR_NULL_GRID` SSOT · `execute` mock · `response_mapper`)
-- **REFACTOR ②·③ 미착수** — GUI 회귀 테스트 · presenter/DI ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md))
+- **REFACTOR ③ 미착수** — presenter · DI · UI DRY ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md))
 
 ---
 

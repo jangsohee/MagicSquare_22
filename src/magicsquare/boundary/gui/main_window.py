@@ -10,13 +10,13 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QMainWindow,
-    QMessageBox,
     QPushButton,
     QTextEdit,
     QVBoxLayout,
     QWidget,
 )
 
+from magicsquare.boundary.example_grids import UT09_PARTIAL_GRID
 from magicsquare.boundary.gui.grid_panel import GridPanel
 from magicsquare.boundary.schemas import FailureResponse, SuccessResponse
 from magicsquare.boundary.ui_boundary import UIBoundary
@@ -24,22 +24,23 @@ from magicsquare.entity.magic_constant import MagicConstant
 
 logger = logging.getLogger(__name__)
 
-# UT-09 / DT-03 example partial grid
-EXAMPLE_GRID: list[list[int]] = [
-    [16, 3, 2, 13],
-    [5, 10, 11, 8],
-    [9, 6, 0, 12],
-    [4, 15, 14, 0],
-]
-
 
 class MainWindow(QMainWindow):
     """Primary application window: grid input, solve, and result display."""
 
-    def __init__(self, boundary: UIBoundary | None = None) -> None:
-        """Initialize window with optional boundary injection for testing."""
+    def __init__(
+        self,
+        boundary: UIBoundary | None = None,
+        example_grid: list[list[int]] | None = None,
+    ) -> None:
+        """Initialize window with optional boundary and example grid injection."""
         super().__init__()
         self._boundary = boundary or UIBoundary()
+        self._example_grid = (
+            [row[:] for row in example_grid]
+            if example_grid is not None
+            else [row[:] for row in UT09_PARTIAL_GRID]
+        )
         self._grid_panel = GridPanel()
         self._result_view = QTextEdit()
         self._status_label = QLabel()
@@ -94,7 +95,7 @@ class MainWindow(QMainWindow):
 
     def _load_example(self) -> None:
         """Fill the grid with the UT-09 example partial magic square."""
-        self._grid_panel.set_grid(EXAMPLE_GRID)
+        self._grid_panel.set_grid(self._example_grid)
         self._grid_panel.clear_highlights()
         self._status_label.setText("Ready — example grid loaded.")
         self._status_label.setStyleSheet("color: #333;")
@@ -113,12 +114,7 @@ class MainWindow(QMainWindow):
         grid = self._grid_panel.read_grid()
         logger.debug("Solve requested for grid=%s", grid)
 
-        try:
-            response = self._boundary.solve(grid)
-        except Exception as exc:  # noqa: BLE001 — show unexpected errors in GUI
-            logger.exception("Unexpected error during solve")
-            self._show_unexpected_error(str(exc))
-            return
+        response = self._boundary.solve(grid)
 
         if response["status"] == "ERROR":
             self._show_failure(response)
@@ -142,16 +138,4 @@ class MainWindow(QMainWindow):
         self._result_view.setPlainText(
             f"result = [{r1}, {c1}, {n1}, {r2}, {c2}, {n2}]\n"
             f"({r1},{c1}) ← {n1},  ({r2},{c2}) ← {n2}"
-        )
-
-    def _show_unexpected_error(self, detail: str) -> None:
-        """Show a modal for unexpected runtime failures."""
-        self._grid_panel.clear_highlights()
-        self._status_label.setText("ERROR — unexpected")
-        self._status_label.setStyleSheet("color: #b00020;")
-        self._result_view.setPlainText(detail)
-        QMessageBox.critical(
-            self,
-            "Unexpected Error",
-            "An unexpected error occurred. See the result panel for details.",
         )
