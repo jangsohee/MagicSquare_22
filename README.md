@@ -3,7 +3,7 @@
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
 Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> **현재 단계:** **GREEN (A-01 완료)** — UT-01 **5 passed** · Track A A-02~A-08 · Track B B-01~B-03 · Integration I-01~I-02 · Boundary Skeleton RED 3 failed / 2 errors · User Entity **9 passed** · [GREEN To-Do](#green-단계-to-do-리스트) · Report/13
+> **현재 단계:** **GREEN 2/13** (A-01~A-02 ✅) · boundary **9 passed** · [GREEN To-Do](#green-단계-to-do-리스트) · Report/13
 
 ---
 
@@ -205,13 +205,13 @@ MagicSquare_/
 - [x] **Dual-Track RED Skeleton** (Report/10 — 21 pytest 스켈레톤, G0~G3 placeholder)
 - [x] **UT-01 Green (A-01)** — `src/magicsquare/boundary/` null 분기 (5 passed, Report/12)
 - [x] **GREEN 묶음 계획 · README To-Do** (Report/13 — A/B/I 13묶음)
-- [ ] **A-02 Green** — UT-02 rows (`ERR_GRID_ROWS`)
+- [x] **A-02 Green** — UT-02 rows (`ERR_GRID_ROWS`, 4 passed)
 - [ ] RED 테스트 ↔ PRD SSOT 정렬 (`INVALID_SIZE` vs `ERR_NULL_GRID` — DEF-002·003)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
 - [ ] Mom Test · 1차 사용자 확정
 - [ ] Track B 병렬: **B-01** D-VAL Green
-- [ ] Track A 순차: **A-02~A-08** Green
+- [ ] Track A 순차: **A-03~A-08** Green
 - [ ] Data Track · 통합 테스트 (I-01 / I-02)
 
 ---
@@ -221,11 +221,12 @@ MagicSquare_/
 | Suite | 결과 | 비고 |
 |-------|------|------|
 | `tests/boundary/test_ac_fr01_01_null_grid.py` | **5 passed** | A-01 Green ✅ |
-| `tests/boundary/` (전체) | **5 passed, 3 failed, 2 errors** | Skeleton RED + `ui_boundary` 미구현 |
+| `tests/boundary/test_ut02_grid_rows.py` | **4 passed** | A-02 Green ✅ |
+| `tests/boundary/` (전체) | **9 passed, 3 failed, 2 errors** | Skeleton RED + `ui_boundary` 미구현 |
 | `tests/entity/test_user.py` | **9 passed** | User Entity Green |
 | `tests/entity/test_d_*.py` | **4 errors** (수집) | `entity.services` 미구현 |
 
-**다음 Green 착수:** [A-02](#a-02--ut-02-grid-rows-ac-fr01-02) (순차) 또는 [B-01](#b-01--d-val-magic-validator-fr-04--dt-0108) (병렬)
+**다음 Green 착수:** [A-03](#a-03--ut-03-grid-cols-ac-fr01-03) (순차) 또는 [B-01](#b-01--d-val-magic-validator-fr-04--dt-0108) (병렬)
 
 ---
 
@@ -242,8 +243,9 @@ MagicSquare_/
 - [x] TC-A-07: pydantic ERROR envelope *(A-01 Green)*
 
 ### Track A — P1 확장 (AC-FR01-02·03 / UT-02·03)
-- [ ] TC-A-05: `grid=[]` → `ERR_GRID_ROWS` *(A-02 RED 미작성)*
-- [ ] TC-A-06: 3×4 → `ERR_GRID_ROWS` *(A-02 RED 미작성)*
+- [x] TC-A-05: `grid=[]` → `ERR_GRID_ROWS` *(A-02 Green)*
+- [x] TC-A-06: 3×4 → `ERR_GRID_ROWS` *(A-02 Green)*
+- [x] UT-02 RED — `test_ut02_grid_rows.py` ×4 *(A-02)*
 
 ### Track A — P2 (Skeleton → Full RED 대기)
 - [ ] U-IN-04/05 value range — `test_u_in_04_value_range.py` *(A-04)*
@@ -278,7 +280,7 @@ MagicSquare_/
 > 검증 순서: `NULL → ROWS → COLS → RANGE → EMPTY_COUNT → DUPLICATE` ([Report/02](Report/02-tdd-design-report.md)).
 > Track B(B-01~B-03)는 A-01 이후 **병렬** 가능. A-08·I-*는 선행 묶음 Green 완료 후.
 
-**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01 완료, **12 remaining**)
+**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01~A-02 완료, **11 remaining**)
 
 ### Track A — Boundary (순차)
 
@@ -288,11 +290,11 @@ MagicSquare_/
 - [x] pytest: `python -m pytest tests/boundary/test_ac_fr01_01_null_grid.py -v` → **5 passed**
 - [x] 커밋 예: `feat(boundary): AC-FR01-01 null grid Green (A-01)`
 
-#### A-02 · UT-02 grid rows (AC-FR01-02)
-- [ ] RED: `test_ut02_grid_rows.py` *(미작성)* — `[]`, 3×4, 5×5
-- [ ] GREEN: `len(grid) != 4` → `ERR_GRID_ROWS`
-- [ ] pytest: `python -m pytest tests/boundary/test_ut02_grid_rows.py -v`
-- [ ] 커밋 예: `feat(boundary): AC-FR01-02 ERR_GRID_ROWS Green (A-02)`
+#### A-02 · UT-02 grid rows (AC-FR01-02) ✅
+- [x] RED: `test_ut02_grid_rows.py` (4 tests)
+- [x] GREEN: `len(grid) != 4` → `ERR_GRID_ROWS`
+- [x] pytest: `python -m pytest tests/boundary/test_ut02_grid_rows.py -v` → **4 passed**
+- [x] 커밋: `feat(boundary): AC-FR01-02 ERR_GRID_ROWS Green (A-02)`
 
 #### A-03 · UT-03 grid cols (AC-FR01-03)
 - [ ] RED: `test_ut03_grid_cols.py` *(미작성)* — 4×3, `[[]]*4`
