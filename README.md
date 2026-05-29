@@ -3,7 +3,7 @@
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
 Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> **현재 단계:** **GREEN 13/13 완료** ✅ · pytest **54 passed** · **PyQt6 GUI** (`python -m magicsquare`)
+> **현재 단계:** **GREEN 13/13 완료** ✅ · Golden Master **60 passed** · **REFACTOR 계획 수립** (Report/16) · **PyQt6 GUI** (`python -m magicsquare`)
 
 ---
 
@@ -81,7 +81,8 @@ MagicSquare_/
 │   ├── conftest.py                        # G0~G3 placeholder (주석)
 │   ├── entity/                            # 21 passed (B-01~B-03 + user)
 │   ├── boundary/                          # 27 passed (A-01~A-08)
-│   └── integration/                       # 6 passed (I-01~I-02)
+│   ├── integration/                       # 12 passed (I-01~I-02 + GM-TC)
+│   └── golden_master/                     # GM baseline · approve
 ├── Report/
 │   ├── 01-problem-definition-report.md
 │   ├── 02-tdd-design-report.md            # 계약·TC-ID SSOT
@@ -96,7 +97,9 @@ MagicSquare_/
 │   ├── 11-coverage-html-qa-report.md      # htmlcov workaround · DEF-004
 │   ├── 12-ac-fr01-01-green-phase-report.md # UT-01 Green
 │   ├── 13-green-phase-readme-plan-report.md # GREEN 묶음 · README To-Do
-│   └── 14-green-completion-pyqt-gui-report.md # GREEN 13/13 · PyQt GUI
+│   ├── 14-green-completion-pyqt-gui-report.md # GREEN 13/13 · PyQt GUI
+│   ├── 15-golden-master-regression-report.md  # GM-TC-01~05 · approve
+│   └── 16-refactor-plan-ecb-analysis-report.md # REFACTOR 계획 · ECB · SRP
 └── Prompting/
     ├── 01-problem-definition-prompt.md
     ├── 02-tdd-design-prompt.md
@@ -111,7 +114,9 @@ MagicSquare_/
     ├── 11-coverage-html-qa-prompt.md
     ├── 12-ac-fr01-01-green-phase-prompt.md
     ├── 13-green-phase-readme-plan-prompt.md
-    └── 14-green-completion-pyqt-gui-prompt.md
+    ├── 14-green-completion-pyqt-gui-prompt.md
+    ├── 15-golden-master-regression-prompt.md
+    └── 16-refactor-plan-ecb-analysis-prompt.md
 ```
 
 ---
@@ -136,6 +141,7 @@ MagicSquare_/
 | [GREEN 단계 README·묶음 계획](Report/13-green-phase-readme-plan-report.md) | RED/Green 묶음 · README To-Do · pytest 현황 |
 | [GREEN 13/13 · PyQt GUI](Report/14-green-completion-pyqt-gui-report.md) | A-07~I-02 완료 · PyQt6 · ECB Control/Data |
 | [Golden Master 회귀 안전장치](Report/15-golden-master-regression-report.md) | GM-01~10 · approve 패턴 · GM-TC-01~05 |
+| [REFACTOR 계획 · ECB 분석](Report/16-refactor-plan-ecb-analysis-report.md) | Control envelope · facade · GUI 테스트 갭 · P0/P1 |
 
 ### 설계·규칙·에이전트
 
@@ -144,7 +150,7 @@ MagicSquare_/
 | [문제 정의 보고서](Report/01-problem-definition-report.md) | Observation, Why #1~#3, 진짜 문제 정의 |
 | [Cursor Rules·구현 보고서](Report/03-cursor-rules-and-implementation-report.md) | `.cursorrules` · User Entity |
 | [Rules 5파일 통합 보고서](Report/04-magicsquare-rules-consolidation-report.md) | `magicsquare-*.mdc` 11→5 통합 |
-| [Agent 프롬프트 세트 보고서](Report/05-cursor-agents-prompt-set-report.md) | `.cursor/agents/` 8종 |
+| [Agent 프롬프트 세트 보고서](Report/05-cursor-agents-prompt-set-report.md) | `.cursor/agents/` 9종 |
 
 ### Transcript (Prompting)
 
@@ -165,6 +171,7 @@ MagicSquare_/
 | [13 GREEN README·묶음 계획](Prompting/13-green-phase-readme-plan-prompt.md) | RED/Green 묶음 · README To-Do Export |
 | [14 GREEN 완료·PyQt GUI](Prompting/14-green-completion-pyqt-gui-prompt.md) | A-07~I-02 · PyQt6 GUI Export |
 | [15 Golden Master 회귀](Prompting/15-golden-master-regression-prompt.md) | GM baseline · approve · GM-TC-01~05 Export |
+| [16 REFACTOR 계획 · ECB](Prompting/16-refactor-plan-ecb-analysis-prompt.md) | 스멜·ECB·SRP 분석 · Refactor 계획 Export |
 
 ### Cursor Rules
 
@@ -196,7 +203,7 @@ MagicSquare_/
 - [x] STEP 1~5 — 문제 정의 (Report/01)
 - [x] Dual-Track TDD 설계 · 입출력 계약 (Report/02)
 - [x] Cursor Rules — `.cursorrules` + `magicsquare-*.mdc` 5파일 (Report/03 → 04)
-- [x] Cursor Agent 8종 (Report/05)
+- [x] Cursor Agent 9종 (Report/05)
 - [x] User Journey → Scenario → Verification (Report/06)
 - [x] **PRD v1.0 Draft** · 7항목 검토 (Report/07, `docs/PRD_MagicSquare.md`)
 - [x] `pyproject.toml` · User Entity (`tests/entity/` **9 passed**)
@@ -217,6 +224,9 @@ MagicSquare_/
 - [x] **I-01 Green** — IT-FAIL invalid E2E (3 passed)
 - [x] **I-02 Green** — IT-OK solve E2E (3 passed)
 - [x] **PyQt6 GUI** — `boundary/gui` · `python -m magicsquare` (Report/14)
+- [x] **Golden Master 회귀** — GM-TC-01~05 · approve (Report/15)
+- [x] **REFACTOR 사전 분석·계획** — ECB · SRP · 테스트 갭 (Report/16)
+- [ ] REFACTOR P0 구현 — Control envelope → Boundary · facade 통합 · GUI 테스트
 - [ ] RED 테스트 ↔ PRD SSOT 정렬 (`INVALID_SIZE` vs `ERR_NULL_GRID` — DEF-002·003)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
@@ -248,10 +258,11 @@ MagicSquare_/
 | `tests/entity/` (Green suite) | **21 passed** | B-01~B-03 ✅ |
 | `tests/integration/test_it_fail_validation.py` | **3 passed** | I-01 Green ✅ |
 | `tests/integration/test_it_ok_solve.py` | **3 passed** | I-02 Green ✅ |
-| `tests/integration/` | **6 passed** | I-01~I-02 ✅ |
-| **전체 Green suite** | **54 passed** | 13/13 묶음 완료 ✅ |
+| `tests/integration/test_golden_master_magic_square.py` | **6 passed** | GM-TC-01~05 + baseline ✅ |
+| `tests/integration/` | **12 passed** | I-01~I-02 + Golden Master ✅ |
+| **전체 suite** | **60 passed** | Green 13/13 + GM ✅ |
 
-**Green 13/13 완료** — REFACTOR·커버리지·DEF-002 SSOT 정렬은 후속.
+**Green 13/13 + Golden Master 완료** — REFACTOR 구현(P0) · 커버리지 gate · DEF-002 SSOT는 후속 ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md)).
 
 ---
 
@@ -423,7 +434,7 @@ MagicSquare_/
 - [x] **Integration Green** — I-01~I-02 완료
 - [ ] Boundary 레이어 커버리지 **85%+**
 - [ ] Domain Logic 커버리지 **95%+**
-- [x] 전체 pytest 회귀 통과: `python -m pytest -v` → **54 passed**
+- [x] 전체 pytest 회귀 통과: `python -m pytest -v` → **60 passed** (GM 포함)
 
 ### Green 진행 흐름
 
@@ -443,7 +454,48 @@ A-08 SUCCESS ✅ ◄──────────────┘
          │
          ▼
       PyQt6 GUI (optional)
+         │
+         ▼
+      Golden Master ✅ → REFACTOR 계획 (Report/16)
 ```
+
+---
+
+## REFACTOR 단계 To-Do 리스트
+
+> **전제:** `.cursorrules` refactor_phase — observable behavior·E001~E007·int[6] 불변 · pytest PASS 유지.  
+> 상세: [Report/16](Report/16-refactor-plan-ecb-analysis-report.md) · Transcript: [Prompting/16](Prompting/16-refactor-plan-ecb-analysis-prompt.md)
+
+### P0 — Refactor 착수 전 (테스트 Green 선행)
+
+- [ ] `tests/control/test_solve_partial_execute.py` — `SolvePartialMagicSquare.execute`
+- [ ] `tests/boundary/test_ui_boundary.py` — U-OUT · U-FLOW · UT-09 (`UIBoundary` 직접)
+- [ ] `tests/boundary/gui/test_main_window.py` — offscreen PyQt · OK/ERROR envelope 표시
+- [ ] facade spy/mock 대상 단일화 (DEF-003 — `resolve` vs `execute`)
+- [ ] E001 null grid SSOT (DEF-002 — `ERR_NULL_GRID` vs `INVALID_SIZE`, UT-01 Red→Green)
+
+### P0 — ECB 분리 (테스트 Green 후)
+
+- [ ] Control envelope 제거 → `boundary/response_mapper.py` (E006/E007)
+- [ ] `entry.py` / `ui_boundary.py` facade 통합
+- [ ] `main_window.py` — `except Exception` 제거 · envelope 분기만
+
+### P1 — DRY · SSOT
+
+- [ ] `EXAMPLE_GRID` → `tests/conftest.py` (Screen fixture 제거)
+- [ ] `result_presenter` 또는 `grid_panel` tuple API
+- [ ] `InputValidator` — `MagicConstant` SSOT (4 / 16 / 2)
+- [ ] `InputValidator` DI · UI reset Extract Method
+
+### Refactor 완료 게이트
+
+- [ ] `python -m pytest tests/ -q` → 0 failed
+- [ ] `pytest -m golden_master` → baseline diff 없음
+- [ ] `rg "from magicsquare.boundary" src/magicsquare/control/` → 0건
+- [ ] 커버리지: boundary ≥85% · entity ≥95% · 전체 ≥80%
+- [ ] `QT_QPA_PLATFORM=offscreen python -m magicsquare` smoke PASS
+
+**Entity `two_cell_solver` — Refactor 범위 제외** (ECB 위치 적합).
 
 ---
 
@@ -454,7 +506,8 @@ A-08 SUCCESS ✅ ◄──────────────┘
 - **PRD 검토 보완** — AC-ID 전수 Traceability, DT-07/12 AC (Report/07 P0~P1)
 - **`pytest-cov` CI** — 커버리지 gate 미구성
 - **DEF-001** — **해소** — boundary · control · data · integration · gui
-- **RED 테스트 계약 drift** — `INVALID_SIZE` vs PRD `ERR_NULL_GRID` (DEF-002) · `resolve` vs `solve_partial_grid` (DEF-003)
+- **RED 테스트 계약 drift** — `INVALID_SIZE` vs PRD `ERR_NULL_GRID` (DEF-002) · `resolve` vs `execute` (DEF-003) — [Report/16](Report/16-refactor-plan-ecb-analysis-report.md) P0
+- **REFACTOR 미착수** — Control→Boundary envelope 역의존 · GUI 테스트 0% ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md))
 
 ---
 
@@ -491,8 +544,11 @@ magicsquare-gui
 ### 테스트
 
 ```powershell
-# 전체 Green suite (54 passed)
+# 전체 suite (60 passed, GM 포함)
 python -m pytest tests/ -v
+
+# Golden Master only
+python -m pytest tests/integration/test_golden_master_magic_square.py -v -m golden_master
 
 # Boundary (27 passed)
 python -m pytest tests/boundary/ -v
