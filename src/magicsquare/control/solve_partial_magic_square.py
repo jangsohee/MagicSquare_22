@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from magicsquare.entity.services.two_cell_solver import solution
+from magicsquare.entity.services.two_cell_solver import (
+    solution as solve_two_cell_partial_grid,
+)
 
 
 class SolvePartialMagicSquare:
@@ -20,4 +22,4 @@ class SolvePartialMagicSquare:
         Raises:
             UnsolvableDomainError: When no magic completion exists.
         """
-        return solution(grid)
+        return solve_two_cell_partial_grid(grid)

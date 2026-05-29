@@ -228,7 +228,7 @@ MagicSquare_/
 - [x] **REFACTOR 사전 분석·계획** — ECB · SRP · 테스트 갭 (Report/16)
 - [x] REFACTOR ① 레이어·계약 — envelope · facade · E001/MagicConstant SSOT (DEF-002·003)
 - [x] REFACTOR ② 테스트·안전 — Control/Boundary/GUI 회귀 테스트 · Guard · fixture
-- [ ] REFACTOR ③ 구조·유지보수 — presenter · DI · UI DRY (P1/P2)
+- [x] REFACTOR ③ 구조·유지보수 — presenter · DI · UI DRY (P1/P2)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
 - [ ] Mom Test · 1차 사용자 확정
@@ -261,7 +261,7 @@ MagicSquare_/
 | `tests/integration/test_it_ok_solve.py` | **3 passed** | I-02 Green ✅ |
 | `tests/integration/test_golden_master_magic_square.py` | **6 passed** | GM-TC-01~05 + baseline ✅ |
 | `tests/integration/` | **12 passed** | I-01~I-02 + Golden Master ✅ |
-| **전체 suite** | **70 passed** | Green 13/13 + GM + REFACTOR ② ✅ |
+| **전체 suite** | **72 passed** | Green 13/13 + GM + REFACTOR ①②③ ✅ |
 
 **Green 13/13 + Golden Master 완료** — REFACTOR 구현(P0) · 커버리지 gate · DEF-002 SSOT는 후속 ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md)).
 
@@ -435,7 +435,7 @@ MagicSquare_/
 - [x] **Integration Green** — I-01~I-02 완료
 - [ ] Boundary 레이어 커버리지 **85%+**
 - [ ] Domain Logic 커버리지 **95%+**
-- [x] 전체 pytest 회귀 통과: `python -m pytest -v` → **70 passed** (GM 포함)
+- [x] 전체 pytest 회귀 통과: `python -m pytest -v` → **72 passed** (GM 포함)
 
 ### Green 진행 흐름
 
@@ -486,11 +486,11 @@ A-08 SUCCESS ✅ ◄──────────────┘
 
 ### ③ 구조 · 유지보수 (SRP · DRY · 명명)
 
-- [ ] `result_presenter` 또는 `grid_panel` tuple API (`main_window.py` int[6] 표시 분리)
-- [ ] `InputValidator` DI / Factory (`ui_boundary.py` 매 호출 생성 제거)
-- [ ] ERROR/Ready UI reset — Extract Method (`main_window.py`)
-- [ ] `solution` import Rename — `solve_partial_magic_square.py` (P2)
-- [ ] `_build_ui` Extract Method — `main_window.py` (P2)
+- [x] `result_presenter` + `grid_panel.apply_solution_tuple` (`int[6]` 표시 분리)
+- [x] `InputValidator` DI — `UIBoundary` / `entry` module facade (매 solve 생성 제거)
+- [x] ERROR/Ready UI reset — `_reset_ready_ui` Extract Method
+- [x] `solution` import Rename → `solve_two_cell_partial_grid` (Control)
+- [x] `_build_ui` Extract Method — intro / buttons / status / signals
 
 ### Refactor 완료 게이트
 
@@ -512,7 +512,7 @@ A-08 SUCCESS ✅ ◄──────────────┘
 - **`pytest-cov` CI** — 커버리지 gate 미구성
 - **DEF-001** — **해소** — boundary · control · data · integration · gui
 - **DEF-002·003** — **해소** (REFACTOR ① — `ERR_NULL_GRID` SSOT · `execute` mock · `response_mapper`)
-- **REFACTOR ③ 미착수** — presenter · DI · UI DRY ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md))
+- **REFACTOR ①②③** — **완료** · 완료 게이트(커버리지 CI) 후속 ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md))
 
 ---
 
@@ -549,7 +549,7 @@ magicsquare-gui
 ### 테스트
 
 ```powershell
-# 전체 suite (60 passed, GM 포함)
+# 전체 suite (72 passed, GM 포함)
 python -m pytest tests/ -v
 
 # Golden Master only
