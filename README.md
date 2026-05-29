@@ -3,7 +3,7 @@
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
 Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> **현재 단계:** **GREEN 8/13** (A-01~A-06, B-01~B-02 ✅) · boundary **20 passed** · entity **17 passed**
+> **현재 단계:** **GREEN 9/13** (A-01~A-06, B-01~B-03 ✅) · boundary **20 passed** · entity **21 passed**
 
 ---
 
@@ -209,7 +209,7 @@ MagicSquare_/
 - [x] **A-04 Green** — UT-04/05 value range (`ERR_VALUE_RANGE`, 3 passed)
 - [x] **A-05 Green** — UT-06/07 empty count (`ERR_EMPTY_COUNT`, 3 passed)
 - [x] **A-06 Green** — UT-08 duplicate (`ERR_DUPLICATE`, 2 passed)
-- [x] **B-02 Green** — D-LOC/MIS (2 passed)
+- [x] **B-03 Green** — D-SOL `solution()` (4 passed)
 - [ ] RED 테스트 ↔ PRD SSOT 정렬 (`INVALID_SIZE` vs `ERR_NULL_GRID` — DEF-002·003)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
@@ -235,10 +235,10 @@ MagicSquare_/
 | `tests/entity/test_d_mis_01.py` | **1 passed** | B-02 Green ✅ |
 | `tests/entity/test_d_val.py` | **6 passed** | B-01 Green ✅ |
 | `tests/entity/test_user.py` | **9 passed** | User Entity ✅ |
-| `tests/entity/` (Green suite) | **17 passed** | B-01~B-02 ✅ |
-| `tests/entity/test_d_*.py` (전체) | **17 passed, 1 error** | B-03 collection ERROR |
+| `tests/entity/test_d_sol.py` | **4 passed** | B-03 Green ✅ |
+| `tests/entity/` (Green suite) | **21 passed** | B-01~B-03 ✅ |
 
-**다음 Green 착수:** [B-03](#b-03--d-sol-two-cell-solver-fr-05--dt-050710) (Track B) 또는 [A-07](#a-07--u-flow-execute-isolation-fr-01) (Track A)
+**다음 Green 착수:** [A-07](#a-07--u-flow-execute-isolation-fr-01) (Track A) 또는 [A-08](#a-08--ut-09-valid-solve--u-out-ac-fr01-07--fr-05) *(B-03 선행 완료)*
 
 ---
 
@@ -271,7 +271,7 @@ MagicSquare_/
 ### Track B — Domain Skeleton (Full RED 대기)
 - [x] D-VAL ×6 — `test_d_val.py` *(B-01 Green)*
 - [x] D-LOC + D-MIS — `test_d_loc_01.py`, `test_d_mis_01.py` *(B-02 Green)*
-- [ ] D-SOL ×4 — `test_d_sol.py` *(B-03)*
+- [x] D-SOL ×4 — `test_d_sol.py` *(B-03 Green)*
 
 ### Track B — Domain / Logic 격리 (UT-01에서 null 커버)
 - [x] TC-B-01~03: null 입력 Domain 미진입 *(A-01 `resolve` mock — DEF-003 drift: `resolve` vs `solve_partial_grid`)*
@@ -295,7 +295,7 @@ MagicSquare_/
 > 검증 순서: `NULL → ROWS → COLS → RANGE → EMPTY_COUNT → DUPLICATE` ([Report/02](Report/02-tdd-design-report.md)).
 > Track B(B-01~B-03)는 A-01 이후 **병렬** 가능. A-08·I-*는 선행 묶음 Green 완료 후.
 
-**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01~A-06, B-01~B-02 완료, **5 remaining**)
+**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01~A-06, B-01~B-03 완료, **4 remaining**)
 
 ### Track A — Boundary (순차)
 
@@ -361,11 +361,11 @@ MagicSquare_/
 - [x] pytest: **2 passed**
 - [x] 커밋: `feat(entity): D-LOC/MIS blank + missing Green (B-02)`
 
-#### B-03 · D-SOL two-cell solver (FR-05 / DT-05~07, DT-10)
-- [ ] RED: `test_d_sol.py` Full RED (4 tests)
-- [ ] GREEN: `solution()` — forward / reverse / unsolvable
-- [ ] pytest: `python -m pytest tests/entity/test_d_sol.py -v`
-- [ ] 커밋 예: `feat(entity): D-SOL solution Green (B-03)`
+#### B-03 · D-SOL two-cell solver (FR-05 / DT-05~07, DT-10) ✅
+- [x] RED: `test_d_sol.py` (4 tests)
+- [x] GREEN: `solution()` — forward / reverse / unsolvable
+- [x] pytest: **4 passed**
+- [x] 커밋: `feat(entity): D-SOL solution Green (B-03)`
 
 ### Integration (A-08 + B-03 이후)
 
@@ -384,7 +384,7 @@ MagicSquare_/
 ### Green 마일스톤 · 회귀
 
 - [ ] **FR-01 입력 검증 Green** — A-01~A-06 완료
-- [ ] **Domain Core Green** — B-03 완료
+- [x] **Domain Core Green** — B-01~B-03 완료
 - [ ] **성공 경로 Green** — A-08 완료
 - [ ] **Integration Green** — I-01~I-02 완료
 - [ ] Boundary 레이어 커버리지 **85%+**
@@ -397,7 +397,7 @@ MagicSquare_/
 Track A (순차)          Track B (병렬)
 A-01 NULL ✅            B-01 D-VAL ✅
 A-02 ROWS               B-02 LOC/MIS ✅
-A-03 COLS               B-03 SOL
+A-03 COLS               B-03 SOL ✅
 A-04 RANGE                    │
 A-05 EMPTY                    │
 A-06 DUPLICATE                │
