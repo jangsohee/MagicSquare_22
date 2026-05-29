@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from magicsquare.boundary.schemas import (
+    ERR_DUPLICATE_CODE,
     ERR_EMPTY_COUNT_CODE,
     ERR_EMPTY_COUNT_MESSAGE,
     ERR_GRID_COLS_CODE,
@@ -66,4 +67,16 @@ class InputValidator:
                 code=ERR_EMPTY_COUNT_CODE,
                 message=ERR_EMPTY_COUNT_MESSAGE,
             )
+        seen: set[int] = set()
+        for row in grid:
+            for cell in row:
+                if cell == 0:
+                    continue
+                if cell in seen:
+                    return FailureResponse(
+                        status="ERROR",
+                        code=ERR_DUPLICATE_CODE,
+                        message=f"Duplicate non-zero value: {cell}.",
+                    )
+                seen.add(cell)
         return None

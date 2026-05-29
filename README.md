@@ -3,7 +3,7 @@
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
 Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> **현재 단계:** **GREEN 3/13** (A-01~A-03 ✅) · boundary **12 passed** · [GREEN To-Do](#green-단계-to-do-리스트) · Report/13
+> **현재 단계:** **GREEN 6/13** (A-01~A-06 ✅) · boundary **20 passed** · [GREEN To-Do](#green-단계-to-do-리스트) · Report/13
 
 ---
 
@@ -206,13 +206,15 @@ MagicSquare_/
 - [x] **UT-01 Green (A-01)** — `src/magicsquare/boundary/` null 분기 (5 passed, Report/12)
 - [x] **GREEN 묶음 계획 · README To-Do** (Report/13 — A/B/I 13묶음)
 - [x] **A-02 Green** — UT-02 rows (`ERR_GRID_ROWS`, 4 passed)
-- [x] **A-03 Green** — UT-03 cols (`ERR_GRID_COLS`, 3 passed)
+- [x] **A-04 Green** — UT-04/05 value range (`ERR_VALUE_RANGE`, 3 passed)
+- [x] **A-05 Green** — UT-06/07 empty count (`ERR_EMPTY_COUNT`, 3 passed)
+- [x] **A-06 Green** — UT-08 duplicate (`ERR_DUPLICATE`, 2 passed)
 - [ ] RED 테스트 ↔ PRD SSOT 정렬 (`INVALID_SIZE` vs `ERR_NULL_GRID` — DEF-002·003)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
 - [ ] Mom Test · 1차 사용자 확정
 - [ ] Track B 병렬: **B-01** D-VAL Green
-- [ ] Track A 순차: **A-04~A-08** Green
+- [ ] Track A 순차: **A-07~A-08** Green
 - [ ] Data Track · 통합 테스트 (I-01 / I-02)
 
 ---
@@ -223,12 +225,15 @@ MagicSquare_/
 |-------|------|------|
 | `tests/boundary/test_ac_fr01_01_null_grid.py` | **5 passed** | A-01 Green ✅ |
 | `tests/boundary/test_ut02_grid_rows.py` | **4 passed** | A-02 Green ✅ |
-| `tests/boundary/test_ut03_grid_cols.py` | **3 passed** | A-03 Green ✅ |
-| `tests/boundary/` (전체) | **12 passed, 3 failed, 2 errors** | Skeleton RED + `ui_boundary` 미구현 |
+| `tests/boundary/test_u_in_04_value_range.py` | **3 passed** | A-04 Green ✅ |
+| `tests/boundary/test_ut06_empty_count.py` | **3 passed** | A-05 Green ✅ |
+| `tests/boundary/test_u_in_05_duplicate.py` | **2 passed** | A-06 Green ✅ |
+| `tests/boundary/` (Green suite) | **20 passed** | A-01~A-06 ✅ |
+| `tests/boundary/` (전체) | **20 passed, 2 errors** | U-FLOW/U-OUT collection ERROR |
 | `tests/entity/test_user.py` | **9 passed** | User Entity Green |
 | `tests/entity/test_d_*.py` | **4 errors** (수집) | `entity.services` 미구현 |
 
-**다음 Green 착수:** [A-04](#a-04--ut-0405-value-range-ac-fr01-04) (순차) 또는 [B-01](#b-01--d-val-magic-validator-fr-04--dt-0108) (병렬)
+**다음 Green 착수:** [A-07](#a-07--u-flow-execute-isolation-fr-01) (순차) 또는 [B-01](#b-01--d-val-magic-validator-fr-04--dt-0108) (병렬)
 
 ---
 
@@ -252,8 +257,9 @@ MagicSquare_/
 - [x] UT-03 RED — `test_ut03_grid_cols.py` ×3 *(A-03)*
 
 ### Track A — P2 (Skeleton → Full RED 대기)
-- [ ] U-IN-04/05 value range — `test_u_in_04_value_range.py` *(A-04)*
-- [ ] U-IN-05 duplicate — `test_u_in_05_duplicate.py` *(A-06)*
+- [x] U-IN-04/05 value range — `test_u_in_04_value_range.py` *(A-04 Green)*
+- [x] UT-06/07 empty count — `test_ut06_empty_count.py` *(A-05 Green)*
+- [x] U-IN-05 duplicate — `test_u_in_05_duplicate.py` *(A-06 Green)*
 - [ ] U-FLOW-02 E004/E005 — `test_u_flow_02_execute_isolation.py` *(A-07)*
 - [ ] U-OUT-01~03 — `test_u_out_output_contract.py` *(A-08)*
 
@@ -284,7 +290,7 @@ MagicSquare_/
 > 검증 순서: `NULL → ROWS → COLS → RANGE → EMPTY_COUNT → DUPLICATE` ([Report/02](Report/02-tdd-design-report.md)).
 > Track B(B-01~B-03)는 A-01 이후 **병렬** 가능. A-08·I-*는 선행 묶음 Green 완료 후.
 
-**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01~A-03 완료, **10 remaining**)
+**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01~A-06 완료, **7 remaining**)
 
 ### Track A — Boundary (순차)
 
@@ -306,23 +312,23 @@ MagicSquare_/
 - [x] pytest: `python -m pytest tests/boundary/test_ut03_grid_cols.py -v` → **3 passed**
 - [x] 커밋: `feat(boundary): AC-FR01-03 ERR_GRID_COLS Green (A-03)`
 
-#### A-04 · UT-04/05 value range (AC-FR01-04)
-- [ ] RED: `test_u_in_04_value_range.py` Full RED (Skeleton → assert 활성화)
-- [ ] GREEN: cell ∉ `{0}∪[1,16]` → `ERR_VALUE_RANGE`
-- [ ] pytest: `python -m pytest tests/boundary/test_u_in_04_value_range.py -v`
-- [ ] 커밋 예: `feat(boundary): AC-FR01-04 ERR_VALUE_RANGE Green (A-04)`
+#### A-04 · UT-04/05 value range (AC-FR01-04) ✅
+- [x] RED: `test_u_in_04_value_range.py` (3 tests)
+- [x] GREEN: cell ∉ `{0}∪[1,16]` → `ERR_VALUE_RANGE`
+- [x] pytest: **3 passed**
+- [x] 커밋: `feat(boundary): AC-FR01-04 ERR_VALUE_RANGE Green (A-04)`
 
-#### A-05 · UT-06/07 empty count (AC-FR01-05)
-- [ ] RED: `test_ut06_empty_count.py` *(미작성)* — zero×0, zero×3
-- [ ] GREEN: `count(0) != 2` → `ERR_EMPTY_COUNT`
-- [ ] pytest: `python -m pytest tests/boundary/test_ut06_empty_count.py -v`
-- [ ] 커밋 예: `feat(boundary): AC-FR01-05 ERR_EMPTY_COUNT Green (A-05)`
+#### A-05 · UT-06/07 empty count (AC-FR01-05) ✅
+- [x] RED: `test_ut06_empty_count.py` (3 tests)
+- [x] GREEN: `count(0) != 2` → `ERR_EMPTY_COUNT`
+- [x] pytest: **3 passed**
+- [x] 커밋: `feat(boundary): AC-FR01-05 ERR_EMPTY_COUNT Green (A-05)`
 
-#### A-06 · UT-08 duplicate (AC-FR01-06)
-- [ ] RED: `test_u_in_05_duplicate.py` Full RED (Skeleton → assert 활성화)
-- [ ] GREEN: non-zero 중복 → `ERR_DUPLICATE`
-- [ ] pytest: `python -m pytest tests/boundary/test_u_in_05_duplicate.py -v`
-- [ ] 커밋 예: `feat(boundary): AC-FR01-06 ERR_DUPLICATE Green (A-06)`
+#### A-06 · UT-08 duplicate (AC-FR01-06) ✅
+- [x] RED: `test_u_in_05_duplicate.py` (2 tests)
+- [x] GREEN: non-zero 중복 → `ERR_DUPLICATE`
+- [x] pytest: **2 passed**
+- [x] 커밋: `feat(boundary): AC-FR01-06 ERR_DUPLICATE Green (A-06)`
 
 #### A-07 · U-FLOW execute isolation (FR-01)
 - [ ] RED: `test_u_flow_02_execute_isolation.py` — E004/E005만 *(null 격리는 A-01 포함)*

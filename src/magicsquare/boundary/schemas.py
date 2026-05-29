@@ -23,6 +23,8 @@ ERR_EMPTY_COUNT_MESSAGE = (
     "Grid must contain exactly 2 empty cells (value 0)."
 )
 
+ERR_DUPLICATE_CODE = "ERR_DUPLICATE"
+
 
 class FailureResponse(TypedDict):
     """ERROR envelope returned when Boundary validation fails."""
