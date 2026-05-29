@@ -1,4 +1,4 @@
-"""Track B RED skeleton — D-MIS-01 missing numbers.
+"""Track B tests — D-MIS-01 missing numbers.
 
 FR-03 | find_not_exist_nums(G1) → {7, 10} ascending.
 Domain Mock 금지.
@@ -6,9 +6,14 @@ Domain Mock 금지.
 
 from __future__ import annotations
 
-import pytest
-
 from magicsquare.entity.services.missing_number_finder import find_not_exist_nums
+
+G1_PARTIAL: list[list[int]] = [
+    [16, 3, 2, 13],
+    [5, 0, 11, 8],
+    [9, 6, 0, 12],
+    [4, 15, 14, 1],
+]
 
 
 class TestDMis01MissingNumbers:
@@ -16,11 +21,12 @@ class TestDMis01MissingNumbers:
 
     def test_d_mis_01_g1_returns_seven_and_ten_ascending(self) -> None:
         """D-MIS-01 | G1 → {7, 10} ascending."""
+        # D-MIS-01
         # Given
-        # grid = G1
+        grid = [row[:] for row in G1_PARTIAL]
 
         # When
-        # missing = find_not_exist_nums(grid)
+        missing = find_not_exist_nums(grid)
 
-        # Then — [7, 10] ascending
-        pytest.fail("RED: D-MIS-01 — G1 → missing numbers {7, 10} ascending")
+        # Then
+        assert missing == [7, 10]
