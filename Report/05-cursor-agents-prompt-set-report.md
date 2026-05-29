@@ -1,21 +1,22 @@
 # Magic Square 프로젝트 — Cursor Agent 프롬프트 세트 보고서
 
-**작성 목적:** MagicSquare 4×4 TDD 연습용 **역할별 Cursor Agent 8종** 프롬프트 설계·생성·정리 결과 정리  
+**작성 목적:** MagicSquare 4×4 TDD 연습용 **역할별 Cursor Agent 9종** 프롬프트 설계·생성·정리 결과 정리  
 **대상:** 주니어 개발자 + Cursor AI 협업 학습 프로젝트  
-**범위:** `.cursor/agents/*.md` 8파일 · 레거시 Agent 정리 · Report/Prompting Export  
+**범위:** `.cursor/agents/*.md` 9파일 · 레거시 Agent 정리 · Report/Prompting Export  
 **선행 문서:** `Report/04-magicsquare-rules-consolidation-report.md`, `Report/02-tdd-design-report.md`  
-**작성일:** 2026-05-28
+**작성일:** 2026-05-28 · **갱신:** 2026-05-29 (`code-reviewer` 복원)
 
 ---
 
 ## Executive Summary
 
-본 단계에서 MagicSquare 프로젝트는 **Dual-Track TDD · ECB · Report/02 계약**에 정합된 **공식 Cursor Agent 8종**을 정의하고 `.cursor/agents/`에 배치했다. 초기에는 텍스트만 출력했으나, 이후 파일 생성·레거시 Agent 정리까지 완료했다.
+본 단계에서 MagicSquare 프로젝트는 **Dual-Track TDD · ECB · Report/02 계약**에 정합된 **공식 Cursor Agent 9종**을 정의하고 `.cursor/agents/`에 배치했다. 초기에는 8종·텍스트만 출력했으나, 이후 파일 생성·레거시 Agent 정리·`code-reviewer` 역할 분리 복원까지 완료했다.
 
 | 산출물 | 상태 |
 |--------|------|
-| `.cursor/agents/` 공식 Agent 8파일 | **완료** |
+| `.cursor/agents/` 공식 Agent 9파일 | **완료** |
 | 레거시 Agent 6파일 삭제 | **완료** |
+| `code-reviewer.md` 복원 (QA와 역할 분리) | **완료** (2026-05-29) |
 | `Report/05` (본 문서) | **완료** |
 | `Prompting/05` Transcript Export | **완료** |
 | `src/` 마방진 핵심 (DT-01~) | 미착수 (변경 없음) |
@@ -82,7 +83,7 @@
 
 ---
 
-## STEP 3 — 공식 Agent 8종
+## STEP 3 — 공식 Agent 9종
 
 | # | 파일 | Agent Name | readonly | 주요 책임 |
 |---|------|------------|----------|-----------|
@@ -94,14 +95,15 @@
 | 6 | `quality-assurance-engineer.md` | Quality Assurance Engineer | **true** | TC-ID·계약·회귀·커버리지 검증, 버그 위임 |
 | 7 | `ai-integration-expert.md` | AI Integration Expert | false | LLM adapter/port (domain invariant LLM 위임 금지) |
 | 8 | `backup-report-github-manager.md` | Backup Report GitHub Manager | false | Report/Prompting, Git·PR·백업 (push는 승인 후) |
+| 9 | `code-reviewer.md` | Code Reviewer | **true** | diff·코드 품질·ECB·규칙 리뷰 (pytest·릴리스는 QA 위임) |
 
 ### 3.1 Agent 협업 매트릭스
 
 ```
 product-planning-manager (PRD)
         │
-        ├── backend-developer ──┬── quality-assurance-engineer
-        ├── frontend-developer ─┤
+        ├── backend-developer ──┬── code-reviewer (diff·품질)
+        ├── frontend-developer ─┼── quality-assurance-engineer (pytest·릴리스)
         ├── ux-design-advisor ──┘
         ├── system-optimization-engineer
         ├── ai-integration-expert
@@ -112,6 +114,15 @@ product-planning-manager (PRD)
 |----------------|-----------|-----------|
 | product-planning-manager | 불가 | backend, frontend, qa |
 | quality-assurance-engineer | 불가 | backend, frontend, ux |
+| code-reviewer | 불가 | backend, frontend, qa (pytest·릴리스) |
+
+### 3.2 code-reviewer vs quality-assurance-engineer
+
+| 구분 | code-reviewer | quality-assurance-engineer |
+|------|---------------|----------------------------|
+| 초점 | diff·가독성·설계·ECB·forbidden | pytest·TC-ID·커버리지·릴리스 |
+| 실행 | `git diff`·정적 검토 | `pytest`, 계약 대조, Go/No-Go |
+| 출력 | Approve / Request Changes | Pass / Fail / Blocked |
 
 ---
 
@@ -149,9 +160,9 @@ product-planning-manager (PRD)
 | `qa-engineer.md` | → `quality-assurance-engineer.md` |
 | `ai-integration-specialist.md` | → `ai-integration-expert.md` |
 | `code-bug-analyzer.md` | 공식 세트 외, QA 역할과 중복 |
-| `code-reviewer.md` | 공식 세트 외, QA 역할과 중복 |
+| `code-reviewer.md` | 공식 세트 외, QA 역할과 중복 *(→ STEP 7에서 역할 분리 후 복원)* |
 
-### 5.2 정리 후 `.cursor/agents/` (최종)
+### 5.2 정리 후 `.cursor/agents/` (Turn 3 당시 — 8파일)
 
 ```
 .cursor/agents/
@@ -167,13 +178,42 @@ product-planning-manager (PRD)
 
 ---
 
+## STEP 7 — code-reviewer 복원 (2026-05-29)
+
+### 7.1 배경
+
+초기 Turn 3에서 `code-reviewer.md`는 QA와 중복으로 삭제했다. 이후 **구현 diff 리뷰**(가독성·ECB·forbidden)와 **테스트·릴리스 검증**(pytest·TC-ID·커버리지)을 분리하기 위해 공식 Agent로 복원했다.
+
+### 7.2 생성 파일
+
+| 동작 | 경로 |
+|------|------|
+| 생성 | `.cursor/agents/code-reviewer.md` |
+
+### 7.3 현재 `.cursor/agents/` (최종 — 9파일)
+
+```
+.cursor/agents/
+├── system-optimization-engineer.md
+├── ux-design-advisor.md
+├── product-planning-manager.md
+├── backend-developer.md
+├── frontend-developer.md
+├── quality-assurance-engineer.md
+├── ai-integration-expert.md
+├── backup-report-github-manager.md
+└── code-reviewer.md
+```
+
+---
+
 ## STEP 6 — Rules · Agent · Report 관계
 
 | 계층 | 경로 | 역할 |
 |------|------|------|
 | 전역 YAML | `.cursorrules` | 프로젝트 요약·8섹션 |
 | Cursor Rules | `.cursor/rules/magicsquare-*.mdc` (5파일) | alwaysApply / glob별 규칙 |
-| Cursor Agents | `.cursor/agents/*.md` (8파일) | **역할별 협업 페르소나·워크플로** |
+| Cursor Agents | `.cursor/agents/*.md` (9파일) | **역할별 협업 페르소나·워크플로** |
 | 설계 SSOT | `Report/02-tdd-design-report.md` | 계약·invariant·TC-ID |
 
 **Agent는 Rules를 대체하지 않는다.** Agent는 “누가 무엇을 어떤 순서로 하는지”를 정의하고, Rules·Report/02가 “무엇이 금지·필수인지”를 정의한다.
@@ -186,15 +226,15 @@ product-planning-manager (PRD)
 - [ ] DT-01 (`MagicSquareJudge`) Red 테스트부터 마방진 핵심 구현
 - [ ] boundary / control / data 레이어 구현
 - [ ] `pytest-cov` CI 및 커버리지 gate
-- [ ] README에 Agent 8종 목록 반영 (선택)
+- [ ] README에 Agent 9종 목록 반영 (선택)
 
 ---
 
 ## 다음 단계 (권장 순서)
 
-1. Cursor **Agent picker**에서 8 Agent 인식 확인
+1. Cursor **Agent picker**에서 9 Agent 인식 확인
 2. `backend-developer` + `product-planning-manager`로 DT-01 Red 테스트 착수
-3. `quality-assurance-engineer`로 TC-ID·계약 회귀 체크리스트 운영
+3. 구현 후 `code-reviewer` → `quality-assurance-engineer` 순으로 diff·테스트 검증
 4. (선택) `README.md`에 `.cursor/agents/` 섹션 추가
 
 ---
@@ -207,6 +247,8 @@ product-planning-manager (PRD)
 | 삭제 | `.cursor/agents/` 레거시 6파일 (§STEP 5) |
 | 생성 | `Report/05-cursor-agents-prompt-set-report.md` |
 | 생성 | `Prompting/05-cursor-agents-prompt-set-prompt.md` |
+| 생성 | `.cursor/agents/code-reviewer.md` (§STEP 7, 2026-05-29) |
+| 갱신 | `Report/05-cursor-agents-prompt-set-report.md` (9종 반영) |
 
 ---
 

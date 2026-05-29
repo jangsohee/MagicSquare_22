@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Literal, TypedDict
 
-INVALID_SIZE_CODE = "INVALID_SIZE"
-INVALID_SIZE_MESSAGE = "Grid must be 4x4."
+ERR_NULL_GRID_CODE = "ERR_NULL_GRID"
+ERR_NULL_GRID_MESSAGE = "Input grid is null."
 
 ERR_GRID_ROWS_CODE = "ERR_GRID_ROWS"
 ERR_GRID_ROWS_MESSAGE = "Grid must have exactly 4 rows."

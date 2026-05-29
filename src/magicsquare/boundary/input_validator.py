@@ -10,12 +10,13 @@ from magicsquare.boundary.schemas import (
     ERR_GRID_COLS_MESSAGE,
     ERR_GRID_ROWS_CODE,
     ERR_GRID_ROWS_MESSAGE,
+    ERR_NULL_GRID_CODE,
+    ERR_NULL_GRID_MESSAGE,
     ERR_VALUE_RANGE_CODE,
     ERR_VALUE_RANGE_MESSAGE,
-    INVALID_SIZE_CODE,
-    INVALID_SIZE_MESSAGE,
     FailureResponse,
 )
+from magicsquare.entity.magic_constant import MagicConstant
 
 
 class InputValidator:
@@ -36,17 +37,17 @@ class InputValidator:
         if grid is None:
             return FailureResponse(
                 status="ERROR",
-                code=INVALID_SIZE_CODE,
-                message=INVALID_SIZE_MESSAGE,
+                code=ERR_NULL_GRID_CODE,
+                message=ERR_NULL_GRID_MESSAGE,
             )
-        if len(grid) != 4:
+        if len(grid) != MagicConstant.GRID_SIZE:
             return FailureResponse(
                 status="ERROR",
                 code=ERR_GRID_ROWS_CODE,
                 message=ERR_GRID_ROWS_MESSAGE,
             )
         for row in grid:
-            if len(row) != 4:
+            if len(row) != MagicConstant.GRID_SIZE:
                 return FailureResponse(
                     status="ERROR",
                     code=ERR_GRID_COLS_CODE,
@@ -54,14 +55,14 @@ class InputValidator:
                 )
         for row in grid:
             for cell in row:
-                if cell != 0 and not 1 <= cell <= 16:
+                if cell != 0 and not 1 <= cell <= MagicConstant.MAX_CELL_VALUE:
                     return FailureResponse(
                         status="ERROR",
                         code=ERR_VALUE_RANGE_CODE,
                         message=ERR_VALUE_RANGE_MESSAGE,
                     )
         empty_count = sum(cell == 0 for row in grid for cell in row)
-        if empty_count != 2:
+        if empty_count != MagicConstant.REQUIRED_EMPTY_CELLS:
             return FailureResponse(
                 status="ERROR",
                 code=ERR_EMPTY_COUNT_CODE,

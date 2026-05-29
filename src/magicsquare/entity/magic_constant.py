@@ -8,3 +8,5 @@ class MagicConstant:
 
     GRID_SIZE: int = 4
     TARGET_LINE_SUM: int = 34
+    REQUIRED_EMPTY_CELLS: int = 2
+    MAX_CELL_VALUE: int = GRID_SIZE * GRID_SIZE

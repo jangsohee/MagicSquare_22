@@ -67,6 +67,14 @@ class GridPanel(QGroupBox):
             for cell in row:
                 cell.setStyleSheet("")
 
+    def apply_solution_tuple(self, result: list[int]) -> None:
+        """Apply ``int[6]`` = ``[r1,c1,n1,r2,c2,n2]`` to the grid (1-index)."""
+        if len(result) != 6:
+            msg = f"Solution tuple must have 6 elements, got {len(result)}"
+            raise ValueError(msg)
+        r1, c1, n1, r2, c2, n2 = result
+        self.highlight_solution(r1, c1, n1, r2, c2, n2)
+
     def highlight_solution(
         self,
         r1: int,

@@ -10,6 +10,12 @@ import os
 
 import pytest
 
+from magicsquare.boundary.example_grids import UT09_PARTIAL_GRID, UT09_PARTIAL_RESULT
+
+# Re-export for tests (Report/16 — GUI / UT-09 fixture SSOT)
+UT09_EXAMPLE_GRID = UT09_PARTIAL_GRID
+UT09_EXPECTED_RESULT = UT09_PARTIAL_RESULT
+
 # import pytest
 
 # G0 — FIX-MAGIC (complete 4×4 magic square)
@@ -62,6 +68,12 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "golden_master: Golden Master / approval regression tests (GM-TC-*)",
     )
+
+
+@pytest.fixture
+def ut09_partial_grid() -> list[list[int]]:
+    """UT-09 / IT-OK-01 partial grid (deep copy)."""
+    return [row[:] for row in UT09_PARTIAL_GRID]
 
 
 @pytest.fixture

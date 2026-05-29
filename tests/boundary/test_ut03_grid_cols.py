@@ -9,6 +9,10 @@ from unittest.mock import MagicMock, patch
 
 from magicsquare.boundary.entry import validate_and_solve
 
+EXECUTE_PATCH = (
+    "magicsquare.control.solve_partial_magic_square.SolvePartialMagicSquare.execute"
+)
+
 # AC-FR01-03 contract (Report/02)
 AC_FR01_03 = "AC-FR01-03"
 EXPECTED_CODE = "ERR_GRID_COLS"
@@ -51,11 +55,11 @@ class TestUt03GridCols:
         assert response["code"] == EXPECTED_CODE
         assert response["message"] == EXPECTED_MESSAGE
 
-    @patch("magicsquare.boundary.entry.resolve")
-    def test_invalid_cols_skips_resolve_zero_calls_isolation(
-        self, mock_resolve: MagicMock
+    @patch(EXECUTE_PATCH)
+    def test_invalid_cols_skips_execute_zero_calls_isolation(
+        self, mock_execute: MagicMock
     ) -> None:
-        """AC-FR01-03 | ERR_GRID_COLS — Domain resolve() not invoked."""
+        """AC-FR01-03 | ERR_GRID_COLS — Control execute() not invoked."""
         # AC-FR01-03
         # Given
         grid = [[]] * 4
@@ -64,4 +68,4 @@ class TestUt03GridCols:
         validate_and_solve(grid)
 
         # Then
-        mock_resolve.assert_not_called()
+        mock_execute.assert_not_called()
