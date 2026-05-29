@@ -25,6 +25,11 @@ ERR_EMPTY_COUNT_MESSAGE = (
 
 ERR_DUPLICATE_CODE = "ERR_DUPLICATE"
 
+ERR_NO_SOLUTION_CODE = "ERR_NO_SOLUTION"
+ERR_NO_SOLUTION_MESSAGE = (
+    "No magic square completion exists for the given grid."
+)
+
 
 class FailureResponse(TypedDict):
     """ERROR envelope returned when Boundary validation fails."""

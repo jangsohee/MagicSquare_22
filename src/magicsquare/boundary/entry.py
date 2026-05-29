@@ -4,20 +4,19 @@ from __future__ import annotations
 
 from magicsquare.boundary.input_validator import InputValidator
 from magicsquare.boundary.schemas import FailureResponse, SuccessResponse
-from magicsquare.entity.services.two_cell_solver import solution
+from magicsquare.control.solve_partial_magic_square import SolvePartialMagicSquare
 
 
-def resolve(grid: list[list[int]]) -> SuccessResponse:
-    """Delegate to Domain resolver after validation passes.
+def resolve(grid: list[list[int]]) -> SuccessResponse | FailureResponse:
+    """Delegate to Control use case after validation passes.
 
     Args:
         grid: Validated 4x4 grid.
 
     Returns:
-        OK envelope with Domain ``int[6]`` result passthrough.
+        OK or ERROR envelope from Control layer.
     """
-    result = solution(grid)
-    return SuccessResponse(status="OK", result=result)
+    return SolvePartialMagicSquare().execute(grid)
 
 
 def validate_and_solve(
