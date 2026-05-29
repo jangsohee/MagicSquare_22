@@ -215,7 +215,7 @@ MagicSquare_/
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
 - [ ] Mom Test · 1차 사용자 확정
 - [ ] Track B 병렬: **B-03** Green
-- [ ] Track A 순차: **A-07~A-08** Green
+- [ ] Track A 순차: **A-07** Green · ~~A-08~~ ✅
 - [ ] Data Track · 통합 테스트 (I-01 / I-02)
 
 ---
@@ -229,8 +229,10 @@ MagicSquare_/
 | `tests/boundary/test_u_in_04_value_range.py` | **3 passed** | A-04 Green ✅ |
 | `tests/boundary/test_ut06_empty_count.py` | **3 passed** | A-05 Green ✅ |
 | `tests/boundary/test_u_in_05_duplicate.py` | **2 passed** | A-06 Green ✅ |
-| `tests/boundary/` (Green suite) | **20 passed** | A-01~A-06 ✅ |
-| `tests/boundary/` (전체) | **20 passed, 2 errors** | U-FLOW/U-OUT collection ERROR |
+| `tests/boundary/test_ut09_valid_solve.py` | **2 passed** | A-08 Green ✅ |
+| `tests/boundary/test_u_out_output_contract.py` | **3 passed** | A-08 Green ✅ |
+| `tests/boundary/` (Green suite) | **25 passed** | A-01~A-06, A-08 ✅ |
+| `tests/boundary/` (전체) | **25 passed, 1 error** | U-FLOW collection ERROR (A-07) |
 | `tests/entity/test_d_loc_01.py` | **1 passed** | B-02 Green ✅ |
 | `tests/entity/test_d_mis_01.py` | **1 passed** | B-02 Green ✅ |
 | `tests/entity/test_d_val.py` | **6 passed** | B-01 Green ✅ |
@@ -238,7 +240,7 @@ MagicSquare_/
 | `tests/entity/test_d_sol.py` | **4 passed** | B-03 Green ✅ |
 | `tests/entity/` (Green suite) | **21 passed** | B-01~B-03 ✅ |
 
-**다음 Green 착수:** [A-07](#a-07--u-flow-execute-isolation-fr-01) (Track A) 또는 [A-08](#a-08--ut-09-valid-solve--u-out-ac-fr01-07--fr-05) *(B-03 선행 완료)*
+**다음 Green 착수:** [A-07](#a-07--u-flow-execute-isolation-fr-01) (Track A) 또는 [I-01](#i-01--it-fail-validation-errors-integration) *(A-08 완료)*
 
 ---
 
@@ -266,7 +268,8 @@ MagicSquare_/
 - [x] UT-06/07 empty count — `test_ut06_empty_count.py` *(A-05 Green)*
 - [x] U-IN-05 duplicate — `test_u_in_05_duplicate.py` *(A-06 Green)*
 - [ ] U-FLOW-02 E004/E005 — `test_u_flow_02_execute_isolation.py` *(A-07)*
-- [ ] U-OUT-01~03 — `test_u_out_output_contract.py` *(A-08)*
+- [x] U-OUT-01~03 — `test_u_out_output_contract.py` *(A-08 Green)*
+- [x] UT-09 valid solve — `test_ut09_valid_solve.py` *(A-08 Green)*
 
 ### Track B — Domain Skeleton (Full RED 대기)
 - [x] D-VAL ×6 — `test_d_val.py` *(B-01 Green)*
@@ -295,7 +298,7 @@ MagicSquare_/
 > 검증 순서: `NULL → ROWS → COLS → RANGE → EMPTY_COUNT → DUPLICATE` ([Report/02](Report/02-tdd-design-report.md)).
 > Track B(B-01~B-03)는 A-01 이후 **병렬** 가능. A-08·I-*는 선행 묶음 Green 완료 후.
 
-**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01~A-06, B-01~B-03 완료, **4 remaining**)
+**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01~A-06, A-08, B-01~B-03 완료, **3 remaining**)
 
 ### Track A — Boundary (순차)
 
@@ -341,11 +344,11 @@ MagicSquare_/
 - [ ] pytest: `python -m pytest tests/boundary/test_u_flow_02_execute_isolation.py -v`
 - [ ] 커밋 예: `feat(boundary): U-FLOW invalid execute 0-call Green (A-07)`
 
-#### A-08 · UT-09 valid solve + U-OUT (AC-FR01-07 / FR-05)
-- [ ] RED: `test_u_out_output_contract.py` Full RED + UT-09 *(미작성)*
-- [ ] GREEN: valid grid → OK envelope, `int[6]` passthrough (Domain Mock 1회)
-- [ ] pytest: `python -m pytest tests/boundary/test_u_out_output_contract.py -v`
-- [ ] 커밋 예: `feat(boundary): UT-09 OK envelope Green (A-08)`
+#### A-08 · UT-09 valid solve + U-OUT (AC-FR01-07 / FR-05) ✅
+- [x] RED: `test_u_out_output_contract.py` + `test_ut09_valid_solve.py` (5 tests)
+- [x] GREEN: valid grid → OK envelope, `int[6]` passthrough via `resolve()` → `solution()`
+- [x] pytest: `python -m pytest tests/boundary/test_ut09_valid_solve.py tests/boundary/test_u_out_output_contract.py -v` → **5 passed**
+- [x] 커밋: `feat(boundary): UT-09 OK envelope Green (A-08)`
 
 ### Track B — Domain (A-01 이후 병렬)
 
@@ -385,7 +388,7 @@ MagicSquare_/
 
 - [ ] **FR-01 입력 검증 Green** — A-01~A-06 완료
 - [x] **Domain Core Green** — B-01~B-03 완료
-- [ ] **성공 경로 Green** — A-08 완료
+- [x] **성공 경로 Green** — A-08 완료
 - [ ] **Integration Green** — I-01~I-02 완료
 - [ ] Boundary 레이어 커버리지 **85%+**
 - [ ] Domain Logic 커버리지 **95%+**
@@ -416,7 +419,7 @@ A-08 SUCCESS ◄────────────────┘
 - **ECB harmonization** — PRD §22 DEC-01 (Judge/Solver → entity vs control)
 - **PRD 검토 보완** — AC-ID 전수 Traceability, DT-07/12 AC (Report/07 P0~P1)
 - **`pytest-cov` CI** — 커버리지 gate 미구성
-- **DEF-001** — `magicsquare.boundary` **부분 해소** (A-01). U-OUT/U-FLOW는 `ui_boundary` 미구현으로 collection ERROR 잔존
+- **DEF-001** — `magicsquare.boundary` **부분 해소** (A-01, A-08). U-FLOW만 `ui_boundary` 미구현으로 collection ERROR 잔존
 - **RED 테스트 계약 drift** — `INVALID_SIZE` vs PRD `ERR_NULL_GRID` (DEF-002) · `resolve` vs `solve_partial_grid` (DEF-003)
 
 ---

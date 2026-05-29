@@ -2,27 +2,27 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from magicsquare.boundary.input_validator import InputValidator
-from magicsquare.boundary.schemas import FailureResponse
+from magicsquare.boundary.schemas import FailureResponse, SuccessResponse
+from magicsquare.entity.services.two_cell_solver import solution
 
 
-def resolve(grid: list[list[int]]) -> dict[str, Any]:
+def resolve(grid: list[list[int]]) -> SuccessResponse:
     """Delegate to Domain resolver after validation passes.
 
     Args:
         grid: Validated 4x4 grid.
 
-    Raises:
-        NotImplementedError: Domain resolver is not implemented yet.
+    Returns:
+        OK envelope with Domain ``int[6]`` result passthrough.
     """
-    raise NotImplementedError("Domain resolve is not implemented.")
+    result = solution(grid)
+    return SuccessResponse(status="OK", result=result)
 
 
 def validate_and_solve(
     grid: list[list[int]] | None,
-) -> FailureResponse | dict[str, Any]:
+) -> FailureResponse | SuccessResponse:
     """Validate grid input and solve when valid.
 
     Args:

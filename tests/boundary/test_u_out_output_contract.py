@@ -1,14 +1,22 @@
-"""Track A RED skeleton — U-OUT-* success output contract.
+"""Boundary tests for U-OUT success output contract (FR-02/FR-05).
 
-Given valid G1 partial grid; UIBoundary.solve returns int[6] 1-index Success envelope.
-U-OUT-01/02/03: len, coords, missing-number values in result tuple.
+Given valid G1 partial grid; validate_and_solve returns int[6] 1-index Success envelope.
+U-OUT-01/02/03: len, coords, Domain result passthrough (UX-05).
 """
 
 from __future__ import annotations
 
-import pytest
+from magicsquare.boundary.entry import validate_and_solve
 
-from magicsquare.boundary.ui_boundary import UIBoundary
+G1_PARTIAL: list[list[int]] = [
+    [16, 3, 2, 13],
+    [5, 0, 11, 8],
+    [9, 6, 0, 12],
+    [4, 15, 14, 1],
+]
+
+# B-03 reverse assignment for G1 (Report/09 G1 placeholder).
+EXPECTED_G1_RESULT = [2, 2, 10, 3, 3, 7]
 
 
 class TestUOutOutputContract:
@@ -16,39 +24,38 @@ class TestUOutOutputContract:
 
     def test_u_out_01_g1_solve_returns_six_element_result(self) -> None:
         """U-OUT-01 | G1 → len(result)==6, status OK."""
+        # U-OUT-01
         # Given
-        # matrix = G1  # blanks (2,2),(3,3); missing {7,10}
-        # boundary = UIBoundary()
-        # mock execute → [2, 2, 7, 3, 3, 10]
+        grid = [row[:] for row in G1_PARTIAL]
 
         # When
-        # response = boundary.solve(matrix)
+        response = validate_and_solve(grid)
 
-        # Then — status OK; len(result)==6
-        pytest.fail("RED: U-OUT-01 — G1 solve → len(result)==6, status OK")
+        # Then
+        assert response["status"] == "OK"
+        assert len(response["result"]) == 6
 
     def test_u_out_02_g1_solve_coords_are_one_indexed(self) -> None:
         """U-OUT-02 | G1 → r,c ∈ [1,4] 1-index."""
+        # U-OUT-02
         # Given
-        # matrix = G1
-        # boundary = UIBoundary()
-        # mock execute → [2, 2, 7, 3, 3, 10]
+        grid = [row[:] for row in G1_PARTIAL]
 
         # When
-        # response = boundary.solve(matrix)
+        response = validate_and_solve(grid)
 
-        # Then — result[0], result[1], result[3], result[4] each in [1,4]
-        pytest.fail("RED: U-OUT-02 — G1 solve → coords 1-index in [1,4]")
+        # Then
+        result = response["result"]
+        assert all(1 <= result[i] <= 4 for i in (0, 1, 3, 4))
 
     def test_u_out_03_g1_solve_result_matches_expected_tuple(self) -> None:
-        """U-OUT-03 | G1 → result == [2,2,7,3,3,10] (boundary passthrough)."""
+        """U-OUT-03 | G1 → result passthrough without reorder."""
+        # U-OUT-03
         # Given
-        # matrix = G1
-        # boundary = UIBoundary()
-        # mock SolvePartialMagicSquare.execute → [2, 2, 7, 3, 3, 10]
+        grid = [row[:] for row in G1_PARTIAL]
 
         # When
-        # response = boundary.solve(matrix)
+        response = validate_and_solve(grid)
 
-        # Then — result equals [2,2,7,3,3,10] without reorder
-        pytest.fail("RED: U-OUT-03 — G1 solve → result [2,2,7,3,3,10] passthrough")
+        # Then
+        assert response["result"] == EXPECTED_G1_RESULT

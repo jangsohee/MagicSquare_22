@@ -32,3 +32,10 @@ class FailureResponse(TypedDict):
     status: Literal["ERROR"]
     code: str
     message: str
+
+
+class SuccessResponse(TypedDict):
+    """OK envelope returned when Domain solve succeeds."""
+
+    status: Literal["OK"]
+    result: list[int]
