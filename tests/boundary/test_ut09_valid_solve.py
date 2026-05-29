@@ -9,6 +9,10 @@ from unittest.mock import MagicMock, patch
 
 from magicsquare.boundary.entry import validate_and_solve
 
+EXECUTE_PATCH = (
+    "magicsquare.control.solve_partial_magic_square.SolvePartialMagicSquare.execute"
+)
+
 # UT-09 / DT-03 contract (Report/02)
 UT09_GRID: list[list[int]] = [
     [16, 3, 2, 13],
@@ -36,18 +40,18 @@ class TestUt09ValidSolve:
         assert response["status"] == "OK"
         assert response["result"] == EXPECTED_RESULT
 
-    @patch("magicsquare.boundary.entry.resolve")
-    def test_valid_grid_calls_resolve_exactly_once(
-        self, mock_resolve: MagicMock
+    @patch(EXECUTE_PATCH)
+    def test_valid_grid_calls_execute_exactly_once(
+        self, mock_execute: MagicMock
     ) -> None:
-        """UT-09 | valid grid → Domain resolve() invoked exactly once."""
+        """UT-09 | valid grid → Control execute() invoked exactly once."""
         # UT-09
         # Given
-        mock_resolve.return_value = {"status": "OK", "result": EXPECTED_RESULT}
+        mock_execute.return_value = EXPECTED_RESULT
         grid = [row[:] for row in UT09_GRID]
 
         # When
         validate_and_solve(grid)
 
         # Then
-        mock_resolve.assert_called_once()
+        mock_execute.assert_called_once()

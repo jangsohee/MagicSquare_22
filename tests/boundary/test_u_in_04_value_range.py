@@ -9,6 +9,10 @@ from unittest.mock import MagicMock, patch
 
 from magicsquare.boundary.entry import validate_and_solve
 
+EXECUTE_PATCH = (
+    "magicsquare.control.solve_partial_magic_square.SolvePartialMagicSquare.execute"
+)
+
 # AC-FR01-04 contract (Report/02)
 AC_FR01_04 = "AC-FR01-04"
 EXPECTED_CODE = "ERR_VALUE_RANGE"
@@ -56,11 +60,11 @@ class TestUIn04ValueRange:
         assert response["code"] == EXPECTED_CODE
         assert response["message"] == EXPECTED_MESSAGE
 
-    @patch("magicsquare.boundary.entry.resolve")
-    def test_invalid_range_skips_resolve_zero_calls_isolation(
-        self, mock_resolve: MagicMock
+    @patch(EXECUTE_PATCH)
+    def test_invalid_range_skips_execute_zero_calls_isolation(
+        self, mock_execute: MagicMock
     ) -> None:
-        """AC-FR01-04 | ERR_VALUE_RANGE — Domain resolve() not invoked."""
+        """AC-FR01-04 | ERR_VALUE_RANGE — Control execute() not invoked."""
         # AC-FR01-04
         # Given
         grid = [
@@ -74,4 +78,4 @@ class TestUIn04ValueRange:
         validate_and_solve(grid)
 
         # Then
-        mock_resolve.assert_not_called()
+        mock_execute.assert_not_called()

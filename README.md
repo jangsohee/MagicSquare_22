@@ -226,8 +226,9 @@ MagicSquare_/
 - [x] **PyQt6 GUI** — `boundary/gui` · `python -m magicsquare` (Report/14)
 - [x] **Golden Master 회귀** — GM-TC-01~05 · approve (Report/15)
 - [x] **REFACTOR 사전 분석·계획** — ECB · SRP · 테스트 갭 (Report/16)
-- [ ] REFACTOR P0 구현 — Control envelope → Boundary · facade 통합 · GUI 테스트
-- [ ] RED 테스트 ↔ PRD SSOT 정렬 (`INVALID_SIZE` vs `ERR_NULL_GRID` — DEF-002·003)
+- [x] REFACTOR ① 레이어·계약 — envelope · facade · E001/MagicConstant SSOT (DEF-002·003)
+- [ ] REFACTOR ② 테스트·안전 — Control/Boundary/GUI 회귀 테스트 · Guard · fixture
+- [ ] REFACTOR ③ 구조·유지보수 — presenter · DI · UI DRY (P1/P2)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
 - [ ] Mom Test · 1차 사용자 확정
@@ -464,28 +465,32 @@ A-08 SUCCESS ✅ ◄──────────────┘
 ## REFACTOR 단계 To-Do 리스트
 
 > **전제:** `.cursorrules` refactor_phase — observable behavior·E001~E007·int[6] 불변 · pytest PASS 유지.  
-> 상세: [Report/16](Report/16-refactor-plan-ecb-analysis-report.md) · Transcript: [Prompting/16](Prompting/16-refactor-plan-ecb-analysis-prompt.md)
+> 상세: [Report/16](Report/16-refactor-plan-ecb-analysis-report.md) · Transcript: [Prompting/16](Prompting/16-refactor-plan-ecb-analysis-prompt.md)  
+> **권장 순서:** ② 테스트 Green → ① 레이어·계약 P0 → ③ 구조·유지보수 P1/P2 → 완료 게이트
 
-### P0 — Refactor 착수 전 (테스트 Green 선행)
+### ① 레이어 · 계약 (ECB · SSOT)
+
+- [x] E001 null grid SSOT (DEF-002 — `ERR_NULL_GRID` / `Input grid is null.`, UT-01)
+- [x] facade spy/mock 대상 단일화 (DEF-003 — `SolvePartialMagicSquare.execute`)
+- [x] Control envelope 제거 → `boundary/response_mapper.py` (E006/E007)
+- [x] `entry.py` / `ui_boundary.py` facade 통합 (`validate_and_solve` → `UIBoundary.solve`)
+- [x] `InputValidator` — `MagicConstant` SSOT (4 / 16 / 2)
+
+### ② 테스트 · 안전 (회귀 게이트)
 
 - [ ] `tests/control/test_solve_partial_execute.py` — `SolvePartialMagicSquare.execute`
 - [ ] `tests/boundary/test_ui_boundary.py` — U-OUT · U-FLOW · UT-09 (`UIBoundary` 직접)
 - [ ] `tests/boundary/gui/test_main_window.py` — offscreen PyQt · OK/ERROR envelope 표시
-- [ ] facade spy/mock 대상 단일화 (DEF-003 — `resolve` vs `execute`)
-- [ ] E001 null grid SSOT (DEF-002 — `ERR_NULL_GRID` vs `INVALID_SIZE`, UT-01 Red→Green)
-
-### P0 — ECB 분리 (테스트 Green 후)
-
-- [ ] Control envelope 제거 → `boundary/response_mapper.py` (E006/E007)
-- [ ] `entry.py` / `ui_boundary.py` facade 통합
 - [ ] `main_window.py` — `except Exception` 제거 · envelope 분기만
-
-### P1 — DRY · SSOT
-
 - [ ] `EXAMPLE_GRID` → `tests/conftest.py` (Screen fixture 제거)
-- [ ] `result_presenter` 또는 `grid_panel` tuple API
-- [ ] `InputValidator` — `MagicConstant` SSOT (4 / 16 / 2)
-- [ ] `InputValidator` DI · UI reset Extract Method
+
+### ③ 구조 · 유지보수 (SRP · DRY · 명명)
+
+- [ ] `result_presenter` 또는 `grid_panel` tuple API (`main_window.py` int[6] 표시 분리)
+- [ ] `InputValidator` DI / Factory (`ui_boundary.py` 매 호출 생성 제거)
+- [ ] ERROR/Ready UI reset — Extract Method (`main_window.py`)
+- [ ] `solution` import Rename — `solve_partial_magic_square.py` (P2)
+- [ ] `_build_ui` Extract Method — `main_window.py` (P2)
 
 ### Refactor 완료 게이트
 
@@ -506,8 +511,8 @@ A-08 SUCCESS ✅ ◄──────────────┘
 - **PRD 검토 보완** — AC-ID 전수 Traceability, DT-07/12 AC (Report/07 P0~P1)
 - **`pytest-cov` CI** — 커버리지 gate 미구성
 - **DEF-001** — **해소** — boundary · control · data · integration · gui
-- **RED 테스트 계약 drift** — `INVALID_SIZE` vs PRD `ERR_NULL_GRID` (DEF-002) · `resolve` vs `execute` (DEF-003) — [Report/16](Report/16-refactor-plan-ecb-analysis-report.md) P0
-- **REFACTOR 미착수** — Control→Boundary envelope 역의존 · GUI 테스트 0% ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md))
+- **DEF-002·003** — **해소** (REFACTOR ① — `ERR_NULL_GRID` SSOT · `execute` mock · `response_mapper`)
+- **REFACTOR ②·③ 미착수** — GUI 회귀 테스트 · presenter/DI ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md))
 
 ---
 

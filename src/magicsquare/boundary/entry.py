@@ -1,22 +1,9 @@
-"""Boundary entry point."""
+"""Boundary entry point — delegates to ``UIBoundary`` (single facade)."""
 
 from __future__ import annotations
 
-from magicsquare.boundary.input_validator import InputValidator
 from magicsquare.boundary.schemas import FailureResponse, SuccessResponse
-from magicsquare.control.solve_partial_magic_square import SolvePartialMagicSquare
-
-
-def resolve(grid: list[list[int]]) -> SuccessResponse | FailureResponse:
-    """Delegate to Control use case after validation passes.
-
-    Args:
-        grid: Validated 4x4 grid.
-
-    Returns:
-        OK or ERROR envelope from Control layer.
-    """
-    return SolvePartialMagicSquare().execute(grid)
+from magicsquare.boundary.ui_boundary import UIBoundary
 
 
 def validate_and_solve(
@@ -28,9 +15,6 @@ def validate_and_solve(
         grid: Raw grid input, possibly ``None``.
 
     Returns:
-        ERROR envelope on validation failure, otherwise resolver output.
+        ERROR envelope on validation failure, otherwise solve result envelope.
     """
-    failure = InputValidator().validate(grid)
-    if failure is not None:
-        return failure
-    return resolve(grid)
+    return UIBoundary().solve(grid)
