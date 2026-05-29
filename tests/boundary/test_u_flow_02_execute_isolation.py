@@ -1,54 +1,69 @@
-"""Track A RED skeleton — U-FLOW-02 execute isolation (extended).
+"""Boundary tests for U-FLOW-02 execute isolation (FR-01).
 
 Invalid input → SolvePartialMagicSquare.execute call_count==0.
-Extensions cover representative E004/E005 invalid grids (null covered by U-IN-01).
+A-07 scope: E004/E005 only (null isolation covered by A-01 / UT-01).
 """
 
 from __future__ import annotations
 
-import pytest
+from unittest.mock import MagicMock, patch
 
 from magicsquare.boundary.ui_boundary import UIBoundary
+
+# E004 — value range violation (UT-04)
+E004_GRID: list[list[int]] = [
+    [16, 3, 2, 13],
+    [5, 10, 11, 8],
+    [9, 6, 7, 12],
+    [4, 15, 14, 17],
+]
+
+# E005 — duplicate non-zero (UT-08)
+E005_GRID: list[list[int]] = [
+    [16, 3, 2, 0],
+    [5, 10, 11, 8],
+    [9, 6, 7, 12],
+    [4, 15, 5, 0],
+]
 
 
 class TestUFlow02ExecuteIsolation:
     """U-FLOW-02 | FR-01 — Domain execute never invoked on invalid input."""
 
-    def test_u_flow_02_invalid_null_execute_zero_calls(self) -> None:
-        """U-FLOW-02 | null grid → execute spy call_count==0."""
-        # Given
-        # matrix = None
-        # boundary = UIBoundary()
-        # spy: patch SolvePartialMagicSquare.execute
-
-        # When
-        # boundary.solve(matrix)
-
-        # Then — execute.call_count == 0
-        pytest.fail("RED: U-FLOW-02 — invalid null → execute call_count==0")
-
-    def test_u_flow_02_extended_e004_execute_zero_calls(self) -> None:
+    @patch(
+        "magicsquare.control.solve_partial_magic_square.SolvePartialMagicSquare.execute"
+    )
+    def test_u_flow_02_extended_e004_execute_zero_calls(
+        self, mock_execute: MagicMock
+    ) -> None:
         """U-FLOW-02 ext | E004 invalid grid → execute call_count==0."""
+        # U-FLOW-02
         # Given
-        # matrix = grid with cell=17
-        # boundary = UIBoundary()
-        # spy: patch SolvePartialMagicSquare.execute
+        boundary = UIBoundary()
+        grid = [row[:] for row in E004_GRID]
 
         # When
-        # boundary.solve(matrix)
+        response = boundary.solve(grid)
 
-        # Then — execute.call_count == 0
-        pytest.fail("RED: U-FLOW-02 ext — E004 invalid → execute call_count==0")
+        # Then
+        assert response["status"] == "ERROR"
+        mock_execute.assert_not_called()
 
-    def test_u_flow_02_extended_e005_execute_zero_calls(self) -> None:
+    @patch(
+        "magicsquare.control.solve_partial_magic_square.SolvePartialMagicSquare.execute"
+    )
+    def test_u_flow_02_extended_e005_execute_zero_calls(
+        self, mock_execute: MagicMock
+    ) -> None:
         """U-FLOW-02 ext | E005 invalid grid → execute call_count==0."""
+        # U-FLOW-02
         # Given
-        # matrix = grid with duplicate non-zero 5
-        # boundary = UIBoundary()
-        # spy: patch SolvePartialMagicSquare.execute
+        boundary = UIBoundary()
+        grid = [row[:] for row in E005_GRID]
 
         # When
-        # boundary.solve(matrix)
+        response = boundary.solve(grid)
 
-        # Then — execute.call_count == 0
-        pytest.fail("RED: U-FLOW-02 ext — E005 invalid → execute call_count==0")
+        # Then
+        assert response["status"] == "ERROR"
+        mock_execute.assert_not_called()

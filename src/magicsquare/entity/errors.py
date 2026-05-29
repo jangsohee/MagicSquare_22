@@ -19,3 +19,17 @@ class UserValidationError(ValueError):
         """
         self.code = code
         super().__init__(message)
+
+
+class UnsolvableDomainError(Exception):
+    """Raised when no magic square completion exists for a partial grid."""
+
+    def __init__(self, code: str = "NO_COMPLETION", message: str = "") -> None:
+        """Initialize an unsolvable grid error.
+
+        Args:
+            code: Stable machine-readable error code.
+            message: Human-readable explanation for developers and tests.
+        """
+        self.code = code
+        super().__init__(message or "No magic square completion exists.")

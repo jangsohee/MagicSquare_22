@@ -6,6 +6,10 @@ Uncomment and wire when Green phase begins.
 
 from __future__ import annotations
 
+import os
+
+import pytest
+
 # import pytest
 
 # G0 — FIX-MAGIC (complete 4×4 magic square)
@@ -50,3 +54,21 @@ from __future__ import annotations
 # @pytest.fixture(scope="module")
 # def grid_g3() -> list[list[int]]:
 #     return G3
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """Register custom markers used by Golden Master regression tests."""
+    config.addinivalue_line(
+        "markers",
+        "golden_master: Golden Master / approval regression tests (GM-TC-*)",
+    )
+
+
+@pytest.fixture
+def golden_master_update() -> bool:
+    """True when GOLDEN_MASTER_UPDATE requests baseline refresh."""
+    return os.environ.get("GOLDEN_MASTER_UPDATE", "").lower() in {
+        "1",
+        "true",
+        "yes",
+    }
