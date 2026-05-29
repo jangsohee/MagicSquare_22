@@ -3,7 +3,7 @@
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
 Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> **현재 단계:** **GREEN 9/13** (A-01~A-06, B-01~B-03 ✅) · boundary **20 passed** · entity **21 passed**
+> **현재 단계:** **GREEN 13/13 완료** ✅ · pytest **54 passed** · **PyQt6 GUI** (`python -m magicsquare`)
 
 ---
 
@@ -68,24 +68,20 @@ MagicSquare_/
 ├── docs/
 │   ├── PRD_MagicSquare.md                 # 구현 전 PRD (v1.0 Draft)
 │   └── test_plan.md                       # FR-01 / AC-FR01-01 테스트 계획
-├── defect_list.md                         # 결함 DEF-001 부분 해소 · DEF-002~006 Open
+├── defect_list.md                         # DEF-001 해소 · DEF-002~006 Open
 ├── README.md
-├── pyproject.toml                         # pytest · pytest-cov · pydantic · black · ruff
+├── pyproject.toml                         # pytest · dev/gui extras · magicsquare-gui
 ├── .venv/                                 # 로컬 가상환경 (gitignore)
 ├── src/magicsquare/                       # Python ECB
-│   ├── entity/                            # User Entity 구현됨
-│   ├── boundary/                          # A-01 Green — entry · input_validator · schemas
-│   ├── control/                           # (예정)
-│   └── data/                              # (예정)
+│   ├── entity/                            # Domain services · user
+│   ├── boundary/                          # validator · ui_boundary · gui (PyQt6)
+│   ├── control/                           # SolvePartialMagicSquare · use case
+│   └── data/                              # InMemoryMatrixRepository
 ├── tests/
 │   ├── conftest.py                        # G0~G3 placeholder (주석)
-│   ├── entity/
-│   │   ├── test_user.py                   # 9 passed
-│   │   └── test_d_*.py                    # RED Skeleton — 수집 ERROR
-│   ├── boundary/
-│   │   ├── test_ac_fr01_01_null_grid.py   # UT-01 — 5 passed (A-01 Green)
-│   │   └── test_u_*.py                    # Skeleton RED (3 failed) · ui_boundary 미구현 (2 errors)
-│   └── data/ · integration/               # (예정)
+│   ├── entity/                            # 21 passed (B-01~B-03 + user)
+│   ├── boundary/                          # 27 passed (A-01~A-08)
+│   └── integration/                       # 6 passed (I-01~I-02)
 ├── Report/
 │   ├── 01-problem-definition-report.md
 │   ├── 02-tdd-design-report.md            # 계약·TC-ID SSOT
@@ -98,8 +94,9 @@ MagicSquare_/
 │   ├── 09-dual-track-red-design-report.md # FR-01~05 RED 설계표
 │   ├── 10-dual-track-red-skeleton-report.md # RED Skeleton pytest 21건
 │   ├── 11-coverage-html-qa-report.md      # htmlcov workaround · DEF-004
-│   ├── 12-ac-fr01-01-green-phase-report.md # UT-01 Green · boundary 스켈레톤
-│   └── 13-green-phase-readme-plan-report.md # GREEN 묶음 · README To-Do
+│   ├── 12-ac-fr01-01-green-phase-report.md # UT-01 Green
+│   ├── 13-green-phase-readme-plan-report.md # GREEN 묶음 · README To-Do
+│   └── 14-green-completion-pyqt-gui-report.md # GREEN 13/13 · PyQt GUI
 └── Prompting/
     ├── 01-problem-definition-prompt.md
     ├── 02-tdd-design-prompt.md
@@ -113,7 +110,8 @@ MagicSquare_/
     ├── 10-dual-track-red-skeleton-prompt.md
     ├── 11-coverage-html-qa-prompt.md
     ├── 12-ac-fr01-01-green-phase-prompt.md
-    └── 13-green-phase-readme-plan-prompt.md
+    ├── 13-green-phase-readme-plan-prompt.md
+    └── 14-green-completion-pyqt-gui-prompt.md
 ```
 
 ---
@@ -126,7 +124,7 @@ MagicSquare_/
 |------|------|
 | [**PRD**](docs/PRD_MagicSquare.md) | 구현 전 기준 — FR, BR, I/O·Error 계약, Dual-Track, Traceability |
 | [**테스트 플랜**](docs/test_plan.md) | AC-FR01-01 앵커 · UT-01~08 · pytest-cov 전략 |
-| [**결함 목록**](defect_list.md) | DEF-001 부분 해소 · DEF-002~006 Open |
+| [**결함 목록**](defect_list.md) | DEF-001 해소 · DEF-002~006 Open |
 | [TDD 설계 보고서](Report/02-tdd-design-report.md) | TC-ID·Error message·Invariant **단일 진실 원천** |
 | [User Journey 보고서](Report/06-user-journey-to-scenario-verification-report.md) | Epic → Story → Scenario → Verification |
 | [PRD 작성·검토 보고서](Report/07-prd-creation-and-review-report.md) | PRD 산출·7항목 검토·P0~P2 개선 권장 |
@@ -136,6 +134,8 @@ MagicSquare_/
 | [커버리지 HTML QA 보고서](Report/11-coverage-html-qa-report.md) | htmlcov 생성 workaround · DEF-004 · Report/10 이후 |
 | [AC-FR01-01 Green 보고서](Report/12-ac-fr01-01-green-phase-report.md) | UT-01 Green · boundary 최소 구현 |
 | [GREEN 단계 README·묶음 계획](Report/13-green-phase-readme-plan-report.md) | RED/Green 묶음 · README To-Do · pytest 현황 |
+| [GREEN 13/13 · PyQt GUI](Report/14-green-completion-pyqt-gui-report.md) | A-07~I-02 완료 · PyQt6 · ECB Control/Data |
+| [Golden Master 회귀 안전장치](Report/15-golden-master-regression-report.md) | GM-01~10 · approve 패턴 · GM-TC-01~05 |
 
 ### 설계·규칙·에이전트
 
@@ -163,6 +163,8 @@ MagicSquare_/
 | [11 커버리지 HTML QA](Prompting/11-coverage-html-qa-prompt.md) | htmlcov 실패 진단 · workaround |
 | [12 AC-FR01-01 Green](Prompting/12-ac-fr01-01-green-phase-prompt.md) | UT-01 Green · boundary 스켈레톤 |
 | [13 GREEN README·묶음 계획](Prompting/13-green-phase-readme-plan-prompt.md) | RED/Green 묶음 · README To-Do Export |
+| [14 GREEN 완료·PyQt GUI](Prompting/14-green-completion-pyqt-gui-prompt.md) | A-07~I-02 · PyQt6 GUI Export |
+| [15 Golden Master 회귀](Prompting/15-golden-master-regression-prompt.md) | GM baseline · approve · GM-TC-01~05 Export |
 
 ### Cursor Rules
 
@@ -171,7 +173,7 @@ MagicSquare_/
 | [`.cursorrules`](.cursorrules) | project / architecture / tdd_rules 등 YAML 요약 |
 | [`.cursor/rules/`](.cursor/rules/) | `magicsquare-project` · `forbidden` · `ecb-architecture` · `python-code-style` · `tdd-testing` |
 
-**스택:** Python 3.10+ · PEP8 · type hints · pytest · ECB · Dual-Track TDD
+**스택:** Python 3.10+ · PEP8 · type hints · pytest · ECB · Dual-Track TDD · PyQt6 (GUI)
 
 ---
 
@@ -214,6 +216,7 @@ MagicSquare_/
 - [x] **A-08 Green** — UT-09 OK envelope (5 passed)
 - [x] **I-01 Green** — IT-FAIL invalid E2E (3 passed)
 - [x] **I-02 Green** — IT-OK solve E2E (3 passed)
+- [x] **PyQt6 GUI** — `boundary/gui` · `python -m magicsquare` (Report/14)
 - [ ] RED 테스트 ↔ PRD SSOT 정렬 (`INVALID_SIZE` vs `ERR_NULL_GRID` — DEF-002·003)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
@@ -256,6 +259,26 @@ MagicSquare_/
 
 > RED Skeleton 21건 + UT-01 Full RED. UT-01은 **Green 완료(A-01)** — 아래 UT-01 항목은 RED 작성 완료로 체크.
 > Error code/message는 테스트 `INVALID_SIZE` vs PRD `ERR_NULL_GRID` **drift** (DEF-002) — SSOT 통일 전 Green 진행 중.
+
+### Golden Master 회귀 안전장치
+
+> Refactoring 시작 전 구축. GREEN 완료 후 즉시 적용.
+
+#### 기준 파일 생성
+- [x] GM-01: `golden_master_expected.txt` 생성
+- [x] GM-02: 정상/역순/오류 시나리오 추가
+- [x] GM-03: `git add tests/golden_master_expected.txt`
+
+#### 테스트 코드
+- [x] GM-04: `test_golden_master_magic_square` 작성
+- [x] GM-05: approve 패턴 적용
+- [x] GM-06: Golden Master 테스트 PASS 확인
+
+#### 회귀 보호
+- [x] GM-07: row-major 규칙 보호
+- [x] GM-08: 1-index 출력 보호
+- [x] GM-09: reverse 조합 fallback 보호
+- [x] GM-10: Error Contract 보호
 
 ### Track A — UI / Boundary (P0: AC-FR01-01 / UT-01) — RED 작성 완료 ✅
 - [x] TC-A-01: grid=None → status=`"ERROR"` *(A-01 Green)*
@@ -400,7 +423,7 @@ MagicSquare_/
 - [x] **Integration Green** — I-01~I-02 완료
 - [ ] Boundary 레이어 커버리지 **85%+**
 - [ ] Domain Logic 커버리지 **95%+**
-- [ ] 전체 pytest 회귀 통과: `python -m pytest -v`
+- [x] 전체 pytest 회귀 통과: `python -m pytest -v` → **54 passed**
 
 ### Green 진행 흐름
 
@@ -412,11 +435,14 @@ A-03 COLS               B-03 SOL ✅
 A-04 RANGE                    │
 A-05 EMPTY                    │
 A-06 DUPLICATE                │
-A-07 FLOW ────────────────────┤
-A-08 SUCCESS ◄────────────────┘
+A-07 FLOW ✅ ───────────────────┤
+A-08 SUCCESS ✅ ◄──────────────┘
          │
          ▼
-      I-01 IT-FAIL → I-02 IT-OK
+      I-01 IT-FAIL ✅ → I-02 IT-OK ✅
+         │
+         ▼
+      PyQt6 GUI (optional)
 ```
 
 ---
@@ -427,7 +453,7 @@ A-08 SUCCESS ◄────────────────┘
 - **ECB harmonization** — PRD §22 DEC-01 (Judge/Solver → entity vs control)
 - **PRD 검토 보완** — AC-ID 전수 Traceability, DT-07/12 AC (Report/07 P0~P1)
 - **`pytest-cov` CI** — 커버리지 gate 미구성
-- **DEF-001** — `magicsquare.boundary` **해소** (A-01, A-07, A-08). Control/Data 레이어 추가 (I-01~I-02)
+- **DEF-001** — **해소** — boundary · control · data · integration · gui
 - **RED 테스트 계약 drift** — `INVALID_SIZE` vs PRD `ERR_NULL_GRID` (DEF-002) · `resolve` vs `solve_partial_grid` (DEF-003)
 
 ---
@@ -440,23 +466,42 @@ A-08 SUCCESS ◄────────────────┘
 cd c:\DEV\MagicSquare_
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -e ".[dev]"
+pip install -e ".[dev,gui]"
 ```
+
+### GUI (PyQt6)
+
+4×4 격자를 입력하고 **Solve**로 마방진 완성 결과를 확인합니다. Domain 로직은 `UIBoundary` → Control → Entity 경로를 그대로 사용합니다.
+
+```powershell
+pip install -e ".[gui]"
+python -m magicsquare
+# 또는
+magicsquare-gui
+```
+
+| 동작 | 설명 |
+|------|------|
+| **Load Example** | UT-09 부분 격자 로드 |
+| **Solve** | 검증 후 `[r1,c1,n1,r2,c2,n2]` 반환 또는 ERROR 표시 |
+| **Clear** | 격자·결과 초기화 |
+
+셀 값: `0` = 빈칸, `1`~`16` = 채워진 숫자 (정확히 2개의 빈칸 필요).
 
 ### 테스트
 
 ```powershell
-# A-01 Green (5 passed)
-python -m pytest tests/boundary/test_ac_fr01_01_null_grid.py -v
+# 전체 Green suite (54 passed)
+python -m pytest tests/ -v
+
+# Boundary (27 passed)
+python -m pytest tests/boundary/ -v
+
+# Integration (6 passed)
+python -m pytest tests/integration/ -v
 
 # User Entity (9 passed)
 python -m pytest tests/entity/test_user.py -v
-
-# Boundary 전체 (5 passed + 3 failed + 2 errors)
-python -m pytest tests/boundary/ -v --continue-on-collection-errors
-
-# 전체 (entity user 9 passed + boundary 혼재 + d_* 수집 ERROR)
-python -m pytest -v --continue-on-collection-errors
 ```
 
 ### 커버리지 HTML
