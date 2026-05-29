@@ -1,0 +1,51 @@
+---
+description: MagicSquare ECB 레이어·의존성·책임
+globs: "src/**/*.py"
+alwaysApply: false
+---
+
+# ECB Architecture
+
+## Layers
+
+| Layer | Path | Role |
+|-------|------|------|
+| Entity | `src/magicsquare/entity/` | Domain, invariant INV-D1~D7 |
+| Boundary | `src/magicsquare/boundary/` | 입력 검증·응답 포맷 |
+| Control | `src/magicsquare/control/` | Use case 오케스트레이션 |
+| Data | `src/magicsquare/data/` | Repository save/load (ECB 외부) |
+
+## Dependency
+
+```
+boundary → control → entity
+data implements ports; entity/boundary는 data 구현체에 직접 의존 금지
+```
+
+## Entity
+
+- `solve_partial_grid` → `Result[SolutionTuple]` or `NO_COMPLETION`
+- Magic Constant **34**, 10선 합, row-major 빈칸 순서
+- MUST NOT: 입력 검증·Error message 문자열·I/O side effect
+
+## Boundary
+
+- 검증 실패 시 Domain **호출하지 않음**
+- Success: `status="OK"`, `result=int[6]` (Domain 출력 그대로)
+- Error: `status="ERROR"`, `code`, `message` (고정 문구)
+- MUST NOT: `int[6]` 재정렬·0-index 변환·message 임의 변경
+
+## Control
+
+- `execute(grid)` → validate → entity.solve → response (+ optional data.save)
+- MUST NOT: Domain 로직 직접 구현·Boundary 검증 중복
+
+## Data
+
+- `save_grid` / `load_grid` / `save_result` / `load_result` / `delete`
+- InMemory → File JSON (Refactor 시 인터페이스·테스트 불변)
+- MUST NOT: entity/boundary import·Domain invariant 구현
+
+## References
+
+- `Report/02-tdd-design-report.md` §4.1

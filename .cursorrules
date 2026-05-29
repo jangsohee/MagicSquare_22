@@ -1,0 +1,275 @@
+################################################################################
+project:
+  name: MagicSquare
+  language: python
+  python_version: "3.10+"
+  purpose: >-
+    4x4 마방진 규칙 기반 상태 판단. 알고리즘 난이도보다
+    레이어 분리 + 계약 기반 테스트 + 리팩토링 훈련.
+  stage: Dual-Track TDD 설계 완료 · 구현 전
+  stack:
+    - Python 3.10+
+    - pytest · AAA
+    - ECB (boundary / control / entity)
+    - Dual-Track TDD
+  references:
+    - README.md
+    - Report/01-problem-definition-report.md
+    - Report/02-tdd-design-report.md
+    - .cursor/rules/magicsquare-project.mdc
+    - .cursor/rules/magicsquare-forbidden.mdc
+    - .cursor/rules/magicsquare-ecb-architecture.mdc
+    - .cursor/rules/magicsquare-python-code-style.mdc
+    - .cursor/rules/magicsquare-tdd-testing.mdc
+  io_contract:
+    input: "4x4 int[][] — 0=빈칸(정확히 2개), 값 0 또는 1~16, 0 제외 중복 금지"
+    output: "int[6] = [r1,c1,n1,r2,c2,n2] — 좌표 1-index"
+    assignment_rule: >-
+      누락 숫자 2개 중 작은 수→첫 빈칸·큰 수→둘째 빈칸이 magic이면 그 순서,
+      아니면 n1,n2 반대.
+    magic_constant: 34
+    validation_order: "NULL → ROWS → COLS → RANGE → EMPTY_COUNT → DUPLICATE"
+
+################################################################################
+code_style:
+  python_version: "3.10+"
+  style_guide: PEP8 엄격 준수
+  formatter: black
+  linter: ruff
+  max_line_length: 88
+  type_hints: 모든 함수 파라미터와 반환값에 필수
+  annotations: from __future__ import annotations
+  docstring: Google 스타일, 모든 public 메서드에 필수
+  naming:
+    modules: snake_case
+    classes: PascalCase
+    functions: snake_case
+    constants: UPPER_SNAKE_CASE
+  imports: isort 호환 그룹핑 (stdlib → third-party → local)
+  logging: print() 대신 logging 모듈 사용
+
+################################################################################
+architecture:
+  pattern: ECB
+  layers:
+    boundary:
+      path: src/magicsquare/boundary/
+      role: 외부 입출력 담당 (UI, API, CLI)
+      responsibilities:
+        - 4x4 격자 입력 수신·형식 검증 (Report/02 Error code/message)
+        - Success/Error 응답 포맷 (status, result, code, message)
+        - Domain int[6] 출력 변환·재정렬 금지 (1-index 유지)
+      must_not:
+        - 마방진 판정·누락 숫자 계산 등 비즈니스 로직
+        - entity/control 내부 타입 직접 조작
+    control:
+      path: src/magicsquare/control/
+      role: 비즈니스 로직 담당
+      responsibilities:
+        - EmptyCellScanner, MissingNumberResolver
+        - MagicSquareJudge, SolutionAssigner
+        - solve_partial_grid 오케스트레이션 (UC-D01~D05)
+        - entity 규칙 조합으로 int[6] 또는 NO_COMPLETION 산출
+      must_not:
+        - HTTP/CLI/framework 종속 코드
+        - 입력 검증 Error message 문구 하드코딩 (boundary 위임)
+    entity:
+      path: src/magicsquare/entity/
+      role: 도메인 데이터 및 규칙 담당
+      responsibilities:
+        - Grid4x4, CellCoordinate, MissingPair, SolutionTuple
+        - MagicConstant (=34), DomainError enum
+        - invariant INV-D1~D7 (Report/02 §1.2)
+      must_not:
+        - I/O, 파일, UI message, framework import
+  dependency_direction:
+    rule: boundary → control → entity (바깥에서 안쪽으로만 의존)
+    allowed:
+      - boundary imports control
+      - control imports entity
+    forbidden:
+      - entity imports control or boundary
+      - control imports boundary
+  data_layer:
+    path: src/magicsquare/data/
+    note: ECB 외부 영속성; port/interface 경유, entity/control/boundary는 data 구현체에 직접 의존 금지
+
+################################################################################
+tdd_rules:
+  methodology: Dual-Track TDD
+  cycle: Red → Green → Refactor
+  red_before_implementation: true
+  one_red_per_step: true
+  tracks:
+    entity: tests/entity/ — DT-01부터
+    boundary: tests/boundary/ — UT-01부터, control Mock 허용
+    data: tests/data/ — ST-01부터
+    integration: tests/integration/ — Mock control/entity 금지 (실 구현)
+  red_phase:
+    description: >-
+      Report/02 TC-ID에 맞는 실패 테스트를 먼저 작성하고,
+      pytest로 FAIL을 확인한 뒤에만 다음 단계(Green)로 진행한다.
+    rules:
+      - 한 사이클당 Red 테스트 1개 (TC-ID 1:1 권장)
+      - AAA 패턴 준수 (Arrange-Act-Assert)
+      - Given/When/Then은 Report/02와 일치
+      - pytest 실행 결과 FAIL 확인 (AssertionError·ImportError 모두 Red)
+      - 실패 원인이 미구현 또는 의도한 assert 불일치일 것
+    must_not:
+      - src/ 프로덕션 코드를 Red 전에 추가
+      - skip/xfail로 Red 건너뛰기
+      - assert·기대값을 Green에 맞게 미리 약화
+      - 여러 TC를 한 테스트에 묶어 범위 흐리기
+  green_phase:
+    description: >-
+      Red 테스트 1개만 통과시키는 최소 구현을 추가한다.
+      구조 개선은 하지 않고 동작만 맞춘다.
+    rules:
+      - 대상 Red 테스트 1개 PASS
+      - 기존 Green 테스트 회귀 없음 (첫 테스트는 해당 1개 PASS면 충분)
+      - type hints·Google docstring은 public API에 즉시 적용
+      - 레이어 책임(ECB) 준수
+    must_not:
+      - rename, extract, dead code 제거 등 리팩터링
+      - Red와 무관한 기능·레이어 코드 추가
+      - 테스트 assert·기대값 완화
+      - skip/xfail로 Green 달성
+  refactor_phase:
+    description: >-
+      전체 Green 상태에서 observable behavior 변경 없이
+      구조·가독성·중복만 개선한다. 동작 변경은 새 Red부터.
+    rules:
+      - pytest 전체 PASS 유지
+      - coverage_minimum(80%) 및 레이어 하한(entity 95%, boundary 85%, data 80%) 유지
+      - 입출력 계약·Error message·int[6] 포맷 불변
+      - Report/02 Traceability(TC-ID ↔ invariant) 유지
+      - InMemory→File 등 data 구현 교체 허용 (인터페이스·테스트 불변)
+    must_not:
+      - observable behavior 변경 (새 Red 없이)
+      - 테스트 삭제·약화·skip/xfail
+      - boundary에서 좌표 0-index 변환 또는 result 재정렬
+
+################################################################################
+testing:
+  framework: pytest
+  pattern: AAA (Arrange-Act-Assert)
+  coverage_minimum: "80%"
+  coverage_by_layer:
+    entity: "95%"
+    boundary: "85%"
+    data: "80%"
+  naming_convention: test_ 접두사 필수 (예: test_dt01_complete_magic_is_valid)
+  fixture_scope:
+    function: 테스트별 격자·Result 객체 (기본)
+    module: FIX-MAGIC 등 불변 픽스처 (conftest.py)
+    session: temp dir (File Repository 통합 테스트만)
+    rules:
+      - FIX-MAGIC 격자는 tests/conftest.py에 module scope로 1회 정의
+      - 테스트 간 mutable 공유 fixture 금지
+      - boundary 테스트의 control Mock은 function scope
+  fixtures:
+    complete_magic: Report/02 FIX-MAGIC 격자
+    partial_ut09: Report/02 UT-09 Given 격자
+  integration_scenarios:
+    ok: IT-OK-01, IT-OK-02, IT-OK-03
+    fail: IT-FAIL-01, IT-FAIL-02, IT-FAIL-03, IT-FAIL-04, IT-FAIL-05
+  mock_policy:
+    boundary_tests: control layer Mock 허용
+    integration_tests: control/entity Mock 금지
+
+################################################################################
+forbidden:
+  - pattern: print() 디버깅
+    reason: stdout 오염·CI 불안정·테스트 격리 위반
+    alternative: logging.getLogger(__name__) (level=DEBUG)
+  - pattern: 매직 넘버 하드코딩 (예: if total == 34)
+    reason: Magic Constant 의미 불명·계약 drift
+    alternative: entity.MagicConstant.TARGET_LINE_SUM 또는 MAGIC_CONSTANT = 34 상수 1곳
+  - pattern: except 단독 사용 (bare except / except Exception: pass)
+    reason: DomainError·검증 오류 은폐
+    alternative: 구체 예외 catch + 재raise 또는 Result/error 반환
+  - pattern: RED 없이 신규 프로덕션 동작 추가
+    reason: TDD 계약 위반·회귀 추적 불가
+    alternative: Red 테스트 작성 → FAIL 확인 → Green 최소 구현
+  - pattern: skip/xfail 또는 assert 완화로 Green 만들기
+    reason: 테스트 신뢰 상실
+    alternative: 구현 수정; 요구 변경 시 Report/02·TC-ID 먼저 갱신
+  - pattern: boundary에서 int[6] 재정렬·0-index 변환
+    reason: 입출력 계약 위반
+    alternative: control/entity 결과를 그대로 SuccessResponse.result에 전달
+  - pattern: entity에서 I/O·파일·UI message
+    reason: ECB 레이어 침범
+    alternative: boundary(control 호출 전/후) 또는 data(port)로 위임
+  - pattern: integration 테스트에서 control/entity Mock
+    reason: end-to-end 계약 검증 무력화
+    alternative: 실 control + 실 entity + (선택) InMemory data
+  - pattern: Report/02 Error message 문구 임의 변경
+    reason: UI Contract(UT-01~08) 회귀
+    alternative: Report/02 §2.2 표 문구 그대로 사용
+  - pattern: type hint 없는 public 함수
+    reason: 계약 불명·IDE/정적 검사 무력화
+    alternative: 모든 파라미터·반환값에 type hints + Google docstring
+
+################################################################################
+file_structure:
+  root: MagicSquare_/
+  tree: |
+    MagicSquare_/
+    ├── .cursorrules
+    ├── .cursor/rules/              # magicsquare-*.mdc 규칙
+    ├── pyproject.toml                # pytest, ruff, black (예정)
+    ├── README.md
+    ├── Report/
+    ├── Prompting/
+    ├── src/magicsquare/
+    │   ├── boundary/               # ECB: 외부 입출력 (CLI/API/응답)
+    │   │   ├── validator.py
+    │   │   ├── response.py
+    │   │   └── errors.py
+    │   ├── control/                # ECB: 비즈니스 로직
+    │   │   ├── empty_cell_scanner.py
+    │   │   ├── missing_number_resolver.py
+    │   │   ├── magic_square_judge.py
+    │   │   └── solution_assigner.py
+    │   ├── entity/                 # ECB: 도메인 데이터·규칙
+    │   │   ├── grid.py
+    │   │   ├── coordinates.py
+    │   │   ├── constants.py
+    │   │   └── errors.py
+    │   └── data/                   # Repository (ECB 외부)
+    │       └── matrix_repository.py
+    └── tests/
+        ├── conftest.py             # FIX-MAGIC, 공통 fixture
+        ├── boundary/               # UT-* (Dual-Track UI)
+        ├── control/                # DT-* (Dual-Track Logic)
+        ├── entity/                 # entity 단위 (필요 시)
+        ├── data/                   # ST-*
+        └── integration/            # IT-*
+
+################################################################################
+ai_behavior:
+  role: TDD 협업 파트너 (코드 생성기 아님)
+  before_coding:
+    - Report/02-tdd-design-report.md 해당 TC-ID·레이어 섹션 확인
+    - 관련 tests/ 파일 존재·Red 상태 확인; 없으면 Red 테스트 먼저 작성
+    - .cursor/rules/magicsquare-*.mdc 규칙 확인
+    - ECB 의존 방향(boundary→control→entity) 위반 여부 사전 점검
+  during_coding:
+    - 현재 TDD phase(red/green/refactor) 명시 후 그 phase 규칙만 적용
+    - type hint 없는 public 함수 생성 금지
+    - Google docstring 없는 public 메서드 생성 금지
+    - ECB 레이어 경계 위반 코드 생성 금지 (위반 시 생성 중단·경고)
+    - Green phase에서 리팩터링 금지
+    - 최소 diff; 요청·TC-ID 범위 밖 코드 추가 금지
+  after_coding:
+    - pytest 실행 제안·결과 보고
+    - tdd_rules 위반 감지 시 "[TDD WARNING]" 접두어로 경고 출력
+      (예: Red 없이 src/ 수정, assert 약화, Green 중 refactor)
+    - Given/When/Then + TC-ID로 변경 요약
+    - 커버리지·레이어 하한 미달 시 "[COVERAGE WARNING]" 출력
+  when_tests_fail:
+    - 구현 수정 우선; 테스트 약화·skip/xfail 금지
+  output_format:
+    - 검증 가능한 진술 (Given/When/Then)
+    - TC-ID(DT/UT/ST/IT) 명시
+  commits: 사용자 요청 시에만; 메시지는 why 중심

@@ -1,0 +1,35 @@
+---
+description: MagicSquare Python 3.10+ 스타일·type hints
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python Code Style
+
+## MUST
+
+- Python **3.10+**, **PEP8** (black 88, ruff)
+- `from __future__ import annotations` (파일 상단)
+- 모든 public 함수·메서드에 **type hints** + **Google docstring**
+- naming: modules/functions `snake_case`, classes `PascalCase`, constants `UPPER_SNAKE_CASE`
+- imports: isort 그룹 (stdlib → third-party → local)
+- 디버깅: `logging` 모듈 (`print()` 금지)
+
+## Examples
+
+```python
+# BAD
+def solve(grid):
+    print(grid)
+
+# GOOD
+def solve_partial_grid(grid: Grid4x4) -> Result[SolutionTuple]:
+    """Solve partial 4x4 grid per Report/02."""
+    ...
+```
+
+## MUST NOT
+
+- `print()` 디버깅
+- type hint 없는 public API
+- obvious 주석 (코드가 설명하도록 작성)
