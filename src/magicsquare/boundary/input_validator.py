@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from magicsquare.boundary.schemas import (
+    ERR_GRID_COLS_CODE,
+    ERR_GRID_COLS_MESSAGE,
     ERR_GRID_ROWS_CODE,
     ERR_GRID_ROWS_MESSAGE,
     INVALID_SIZE_CODE,
@@ -38,4 +40,11 @@ class InputValidator:
                 code=ERR_GRID_ROWS_CODE,
                 message=ERR_GRID_ROWS_MESSAGE,
             )
+        for row in grid:
+            if len(row) != 4:
+                return FailureResponse(
+                    status="ERROR",
+                    code=ERR_GRID_COLS_CODE,
+                    message=ERR_GRID_COLS_MESSAGE,
+                )
         return None
