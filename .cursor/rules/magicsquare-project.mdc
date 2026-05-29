@@ -1,0 +1,52 @@
+---
+description: MagicSquare 프로젝트 개요·가드레일·입출력 계약
+alwaysApply: true
+---
+
+# MagicSquare Project
+
+## Purpose
+
+4×4 마방진 규칙 기반 상태 판단. 레이어 분리 + 계약 기반 테스트 + 리팩토링 훈련.
+
+## MUST
+
+- `Report/02-tdd-design-report.md`를 계약·invariant의 **단일 진실 원천**으로 따른다.
+- Red → Green → Refactor. **RED 없이** `src/` 프로덕션 코드를 작성하지 않는다.
+- 한 작업 단위 = **하나의 Red 테스트** + 최소 Green + Refactor.
+- 사용자 요청 없이 git commit/push 하지 않는다.
+
+## I/O Contract
+
+### Input
+
+- `4×4` 격자 (`list[list[int]]` 또는 동등 타입)
+- `0` = 빈칸, **정확히 2개**
+- 값: `0` 또는 `1..16`, `0` 제외 **중복 금지**
+
+### Output
+
+- `list[int]` 길이 6: `[r1, c1, n1, r2, c2, n2]` — 좌표 **1-index**
+- `(r1,c1)` = row-major 첫 빈칸, `(r2,c2)` = 두 번째 빈칸
+- `{n1, n2}` = `{1..16} \ present`
+- **배치:** 작은 수→첫 빈칸·큰 수→둘째 빈칸이 magic이면 그 순서, 아니면 `n1,n2` 반대
+
+### Constants
+
+- Magic Constant (선 합) = **34** (4행 + 4열 + 주대각 + 부대각)
+- Boundary 검증 순서: `NULL → ROWS → COLS → RANGE → EMPTY_COUNT → DUPLICATE`
+- Error code/message: `Report/02` §2.2 표와 **완전 일치**
+
+## Layout
+
+```
+src/magicsquare/{boundary,control,entity,data}/
+tests/{boundary,entity,data,integration}/ + conftest.py
+Report/02-tdd-design-report.md
+```
+
+## References
+
+- `.cursorrules`
+- `README.md`
+- `Report/02-tdd-design-report.md`

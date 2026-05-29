@@ -1,0 +1,28 @@
+---
+description: MagicSquare 금지 패턴 (TDD·ECB·계약)
+alwaysApply: true
+---
+
+# Forbidden
+
+## MUST NOT
+
+| Pattern | Alternative |
+|---------|-------------|
+| `print()` 디버깅 | `logging.getLogger(__name__)` |
+| 매직 넘버 `34` 하드코딩 | `MagicConstant.TARGET_LINE_SUM` 등 상수 1곳 |
+| bare `except` / `except Exception: pass` | 구체 예외 + Result/error 반환 |
+| Red 없이 `src/` 동작 추가 | Red → FAIL 확인 → Green 최소 구현 |
+| `skip` / `xfail` / assert 완화로 Green | 구현 수정; 변경 시 Report/02·TC-ID 먼저 |
+| boundary에서 `int[6]` 재정렬·0-index 변환 | control/entity 결과 그대로 전달 |
+| entity에서 I/O·파일·UI message | boundary 또는 data(port)로 위임 |
+| integration에서 control/entity Mock | 실 control + 실 entity |
+| Report/02 Error message 임의 변경 | §2.2 표 문구 그대로 |
+| type hint 없는 public 함수 | type hints + Google docstring |
+| 설계 보고서 없이 invariant·계약 변경 | Report/02 갱신 후 구현 |
+| 요청·TC-ID 범위 밖 리팩터·기능 추가 | 범위 내 최소 diff만 |
+
+## References
+
+- `Report/02-tdd-design-report.md` §2.2
+- `.cursor/rules/magicsquare-project.mdc`

@@ -1,9 +1,9 @@
 # MagicSquare_
 
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
-Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
+Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> 현재 단계: **문제 정의 완료** · 구현 전
+> **현재 단계:** **GREEN 13/13** ✅ · Golden Master ✅ · **REFACTOR ①②③ 완료** (Report/17) · **Ask 커버리지 QA** (Report/18) · **72 passed** · PyQt6 GUI (`python -m magicsquare`)
 
 ---
 
@@ -20,8 +20,8 @@ Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → 검증 가능한
 |------|------|
 | **학습** | 주니어 개발자가 실제로 동작하는 소프트웨어를 만들며 역량을 쌓음 |
 | **도구** | Cursor AI를 코드 생성기가 아닌 **협업 도구**로 활용 |
-| **도메인** | 규칙이 명확하고(행·열·대각 합), 검증·시각화·테스트에 유리한 4×4 격자 문제 |
-| **방법** | The Mom Test, 5 Whys, TDD 마인드(규칙을 먼저 고정) |
+| **도메인** | 규칙이 명확하고(행·열·대각 합), 검증·테스트에 유리한 4×4 격자 문제 |
+| **방법** | The Mom Test, 5 Whys, Dual-Track TDD(규칙을 먼저 고정) |
 
 ---
 
@@ -31,7 +31,7 @@ Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → 검증 가능한
 
 1. 정해진 숫자 집합(1~16)이 **중복·누락 없이** 한 번씩 사용된다.
 2. **빈 칸이 없다.**
-3. 모든 **행·열·대각선**의 합이 **동일**하다.
+3. 모든 **행·열·대각선**의 합이 **동일**하다 (4×4·1~16 설정에서 **34**).
 
 부분 완성 상태에서는 **위반은 즉시 드러내고**, 아직 판단할 수 없는 조건은 **“미정”**으로 둡니다.
 
@@ -51,8 +51,8 @@ Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → 검증 가능한
 - 문제와 해결책 분리
 - 불변 조건(invariant) 식별
 - 입력·출력 계약을 말로 합의 가능하게 고정
+- Dual-Track TDD (Boundary 계약 ∥ Domain 불변식)
 - 가장 작은 참인 경우부터 점진적으로 신뢰 쌓기
-- 사용자(또는 본인)의 **다음 행동**을 알 수 있는 피드백 설계
 - AI와 **검증 가능한 진술**을 공유하는 협업
 
 ---
@@ -61,51 +61,569 @@ Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → 검증 가능한
 
 ```
 MagicSquare_/
-├── README.md                              # 이 파일
+├── .cursorrules                           # Cursor 전역 YAML 규칙 (요약)
+├── .cursor/
+│   ├── rules/                             # magicsquare-*.mdc (5개)
+│   └── agents/                            # 역할별 Cursor Agent (8개)
+├── docs/
+│   ├── PRD_MagicSquare.md                 # 구현 전 PRD (v1.0 Draft)
+│   └── test_plan.md                       # FR-01 / AC-FR01-01 테스트 계획
+├── defect_list.md                         # DEF-001 해소 · DEF-002~006 Open
+├── README.md
+├── pyproject.toml                         # pytest · dev/gui extras · magicsquare-gui
+├── .venv/                                 # 로컬 가상환경 (gitignore)
+├── src/magicsquare/                       # Python ECB
+│   ├── entity/                            # Domain services · user
+│   ├── boundary/                          # validator · response_mapper · gui
+│   ├── control/                           # SolvePartialMagicSquare · use case
+│   └── data/                              # InMemoryMatrixRepository
+├── tests/
+│   ├── conftest.py                        # UT-09 fixture · golden_master marker
+│   ├── entity/                            # 21 passed (B-01~B-03 + user)
+│   ├── control/                           # solve_partial execute (REFACTOR ②)
+│   ├── boundary/                          # A-01~A-08 + ui_boundary · presenter
+│   │   └── gui/                           # offscreen MainWindow tests
+│   ├── integration/                       # 12 passed (I-01~I-02 + GM-TC)
+│   └── golden_master/                     # GM baseline · approve
 ├── Report/
-│   └── 01-problem-definition-report.md    # STEP 1~5 문제 정의 전체 보고서
+│   ├── 01-problem-definition-report.md
+│   ├── 02-tdd-design-report.md            # 계약·TC-ID SSOT
+│   ├── 03-cursor-rules-and-implementation-report.md
+│   ├── 04-magicsquare-rules-consolidation-report.md
+│   ├── 05-cursor-agents-prompt-set-report.md
+│   ├── 06-user-journey-to-scenario-verification-report.md
+│   ├── 07-prd-creation-and-review-report.md
+│   ├── 08-test-plan-red-phase-report.md   # test_plan · RED · QA
+│   ├── 09-dual-track-red-design-report.md # FR-01~05 RED 설계표
+│   ├── 10-dual-track-red-skeleton-report.md # RED Skeleton pytest 21건
+│   ├── 11-coverage-html-qa-report.md      # htmlcov workaround · DEF-004
+│   ├── 12-ac-fr01-01-green-phase-report.md # UT-01 Green
+│   ├── 13-green-phase-readme-plan-report.md # GREEN 묶음 · README To-Do
+│   ├── 14-green-completion-pyqt-gui-report.md # GREEN 13/13 · PyQt GUI
+│   ├── 15-golden-master-regression-report.md  # GM-TC-01~05 · approve
+│   ├── 16-refactor-plan-ecb-analysis-report.md # REFACTOR 계획 · ECB · SRP
+│   ├── 17-refactor-completion-report.md      # REFACTOR ①②③ 완료 · 72 passed
+│   └── 18.MagicSquare_Ask-Coverage-QA_Report.md # Dual-Track cov 실측 · NFR gate
 └── Prompting/
-    └── 01-problem-definition-prompt.md    # 문제 정의 단계 Cursor 대화 기록
+    ├── 01-problem-definition-prompt.md
+    ├── 02-tdd-design-prompt.md
+    ├── 03-cursor-rules-implementation-prompt.md
+    ├── 04-magicsquare-rules-consolidation-prompt.md
+    ├── 05-cursor-agents-prompt-set-prompt.md
+    ├── 06-user-journey-to-scenario-verification-prompt.md
+    ├── 07-prd-creation-and-review-prompt.md
+    ├── 08-test-plan-red-phase-prompt.md
+    ├── 09-dual-track-red-design-prompt.md
+    ├── 10-dual-track-red-skeleton-prompt.md
+    ├── 11-coverage-html-qa-prompt.md
+    ├── 12-ac-fr01-01-green-phase-prompt.md
+    ├── 13-green-phase-readme-plan-prompt.md
+    ├── 14-green-completion-pyqt-gui-prompt.md
+    ├── 15-golden-master-regression-prompt.md
+    ├── 16-refactor-plan-ecb-analysis-prompt.md
+    ├── 17-refactor-completion-prompt.md
+    └── 18.MagicSquare_Ask-Coverage-QA_Prompt_Transcript.md
 ```
 
 ---
 
 ## 문서
 
+### 핵심 (구현 착수 시)
+
 | 문서 | 설명 |
 |------|------|
-| [문제 정의 보고서](Report/01-problem-definition-report.md) | Observation, Why #1~#3, 진짜 문제 정의, 미해결 항목 |
-| [프롬프팅 기록](Prompting/01-problem-definition-prompt.md) | 문제 정의 단계 Cursor 대화 export |
+| [**PRD**](docs/PRD_MagicSquare.md) | 구현 전 기준 — FR, BR, I/O·Error 계약, Dual-Track, Traceability |
+| [**테스트 플랜**](docs/test_plan.md) | AC-FR01-01 앵커 · UT-01~08 · pytest-cov 전략 |
+| [**결함 목록**](defect_list.md) | DEF-001 해소 · DEF-002~006 Open |
+| [TDD 설계 보고서](Report/02-tdd-design-report.md) | TC-ID·Error message·Invariant **단일 진실 원천** |
+| [User Journey 보고서](Report/06-user-journey-to-scenario-verification-report.md) | Epic → Story → Scenario → Verification |
+| [PRD 작성·검토 보고서](Report/07-prd-creation-and-review-report.md) | PRD 산출·7항목 검토·P0~P2 개선 권장 |
+| [테스트 플랜·RED·QA 보고서](Report/08-test-plan-red-phase-report.md) | test_plan · boundary RED · defect_list · 커버리지 이슈 |
+| [Dual-Track RED 설계 보고서](Report/09-dual-track-red-design-report.md) | U-IN/OUT/FLOW · D-LOC/MIS/VAL/SOL · G0~G3 · I1~I11 |
+| [Dual-Track RED Skeleton 보고서](Report/10-dual-track-red-skeleton-report.md) | pytest 스켈레톤 21건 · conftest · RED 검증 |
+| [커버리지 HTML QA 보고서](Report/11-coverage-html-qa-report.md) | htmlcov 생성 workaround · DEF-004 · Report/10 이후 |
+| [AC-FR01-01 Green 보고서](Report/12-ac-fr01-01-green-phase-report.md) | UT-01 Green · boundary 최소 구현 |
+| [GREEN 단계 README·묶음 계획](Report/13-green-phase-readme-plan-report.md) | RED/Green 묶음 · README To-Do · pytest 현황 |
+| [GREEN 13/13 · PyQt GUI](Report/14-green-completion-pyqt-gui-report.md) | A-07~I-02 완료 · PyQt6 · ECB Control/Data |
+| [Golden Master 회귀 안전장치](Report/15-golden-master-regression-report.md) | GM-01~10 · approve 패턴 · GM-TC-01~05 |
+| [REFACTOR 계획 · ECB 분석](Report/16-refactor-plan-ecb-analysis-report.md) | Control envelope · facade · GUI 테스트 갭 · P0/P1 |
+| [REFACTOR 완료](Report/17-refactor-completion-report.md) | ①②③ 구현 · 72 passed · DEF-002/003 해소 |
+| [Ask Dual-Track 커버리지 QA](Report/18.MagicSquare_Ask-Coverage-QA_Report.md) | NFR gate 실측 · Domain 94% · Boundary 91% · TC backlog |
+
+### 설계·규칙·에이전트
+
+| 문서 | 설명 |
+|------|------|
+| [문제 정의 보고서](Report/01-problem-definition-report.md) | Observation, Why #1~#3, 진짜 문제 정의 |
+| [Cursor Rules·구현 보고서](Report/03-cursor-rules-and-implementation-report.md) | `.cursorrules` · User Entity |
+| [Rules 5파일 통합 보고서](Report/04-magicsquare-rules-consolidation-report.md) | `magicsquare-*.mdc` 11→5 통합 |
+| [Agent 프롬프트 세트 보고서](Report/05-cursor-agents-prompt-set-report.md) | `.cursor/agents/` 9종 |
+
+### Transcript (Prompting)
+
+| 문서 | 설명 |
+|------|------|
+| [01 문제 정의](Prompting/01-problem-definition-prompt.md) | |
+| [02 TDD 설계](Prompting/02-tdd-design-prompt.md) | |
+| [03 Cursor Rules·구현](Prompting/03-cursor-rules-implementation-prompt.md) | |
+| [04 Rules 통합](Prompting/04-magicsquare-rules-consolidation-prompt.md) | |
+| [05 Agent 세트](Prompting/05-cursor-agents-prompt-set-prompt.md) | |
+| [06 User Journey](Prompting/06-user-journey-to-scenario-verification-prompt.md) | |
+| [07 PRD 작성·검토](Prompting/07-prd-creation-and-review-prompt.md) | |
+| [08 테스트 플랜·RED·QA](Prompting/08-test-plan-red-phase-prompt.md) | AC-FR01-01 · test_plan · boundary RED · defect_list |
+| [09 Dual-Track RED 설계](Prompting/09-dual-track-red-design-prompt.md) | FR-01~05 RED 설계표 · Track A/B |
+| [10 Dual-Track RED Skeleton](Prompting/10-dual-track-red-skeleton-prompt.md) | Report/09 → pytest Skeleton 21건 |
+| [11 커버리지 HTML QA](Prompting/11-coverage-html-qa-prompt.md) | htmlcov 실패 진단 · workaround |
+| [12 AC-FR01-01 Green](Prompting/12-ac-fr01-01-green-phase-prompt.md) | UT-01 Green · boundary 스켈레톤 |
+| [13 GREEN README·묶음 계획](Prompting/13-green-phase-readme-plan-prompt.md) | RED/Green 묶음 · README To-Do Export |
+| [14 GREEN 완료·PyQt GUI](Prompting/14-green-completion-pyqt-gui-prompt.md) | A-07~I-02 · PyQt6 GUI Export |
+| [15 Golden Master 회귀](Prompting/15-golden-master-regression-prompt.md) | GM baseline · approve · GM-TC-01~05 Export |
+| [16 REFACTOR 계획 · ECB](Prompting/16-refactor-plan-ecb-analysis-prompt.md) | 스멜·ECB·SRP 분석 · Refactor 계획 Export |
+| [17 REFACTOR 완료](Prompting/17-refactor-completion-prompt.md) | ①②③ 구현 · GitHub push · Report/17 Export |
+| [18 Ask 커버리지 QA](Prompting/18.MagicSquare_Ask-Coverage-QA_Prompt_Transcript.md) | Dual-Track cov 실측 · Report/18 Export |
+
+### Cursor Rules
+
+| 파일 | 설명 |
+|------|------|
+| [`.cursorrules`](.cursorrules) | project / architecture / tdd_rules 등 YAML 요약 |
+| [`.cursor/rules/`](.cursor/rules/) | `magicsquare-project` · `forbidden` · `ecb-architecture` · `python-code-style` · `tdd-testing` |
+
+**스택:** Python 3.10+ · PEP8 · type hints · pytest · ECB · Dual-Track TDD · PyQt6 (GUI)
+
+---
+
+## 고정 입출력 계약
+
+| | 내용 |
+|---|------|
+| **입력** | `4×4 int[][]` — `0`=빈칸, 빈칸 정확히 2개, 값 `0` 또는 `1~16`, 0 제외 중복 금지 |
+| **출력** | `int[6]` = `[r1,c1,n1,r2,c2,n2]` — 좌표 **1-index**, row-major 첫 빈칸 |
+| **배치** | small-first → reverse; 둘 다 실패 시 `ERR_NO_SOLUTION` |
+| **Magic Constant** | 10개 선 합 = **34** (`MagicConstant.TARGET_LINE_SUM`) |
+| **Boundary 검증 순서** | `NULL → ROWS → COLS → RANGE → EMPTY_COUNT → DUPLICATE` |
+
+상세: [PRD §12–13](docs/PRD_MagicSquare.md) · [TDD 설계 보고서](Report/02-tdd-design-report.md)
 
 ---
 
 ## 진행 상황
 
-- [x] STEP 1 — Observation (관찰)
-- [x] STEP 2 — Why #1 (완성해야 하는 이유·불편 분석)
-- [x] STEP 3 — Why #2 (프로그램으로 다루는 이유)
-- [x] STEP 4 — Why #3 (TDD·통제·불변 조건)
-- [x] STEP 5 — 진짜 문제 정의
-- [ ] Mom Test: 실제 사용자·맥락·대안 행동 확인
-- [ ] 1차 사용자 확정
-- [ ] 입력·출력 계약 정의 (구현 전)
-- [ ] 구현
+- [x] STEP 1~5 — 문제 정의 (Report/01)
+- [x] Dual-Track TDD 설계 · 입출력 계약 (Report/02)
+- [x] Cursor Rules — `.cursorrules` + `magicsquare-*.mdc` 5파일 (Report/03 → 04)
+- [x] Cursor Agent 9종 (Report/05)
+- [x] User Journey → Scenario → Verification (Report/06)
+- [x] **PRD v1.0 Draft** · 7항목 검토 (Report/07, `docs/PRD_MagicSquare.md`)
+- [x] `pyproject.toml` · User Entity (`tests/entity/` **9 passed**)
+- [x] **테스트 플랜** (`docs/test_plan.md`, Report/08)
+- [x] **UT-01 RED** — `tests/boundary/test_ac_fr01_01_null_grid.py` (5 tests)
+- [x] **결함 목록** (`defect_list.md`, DEF-001~006)
+- [x] **Dual-Track RED 설계표** (Report/09 — U-IN/OUT/FLOW, D-LOC/MIS/VAL/SOL)
+- [x] **Dual-Track RED Skeleton** (Report/10 — 21 pytest 스켈레톤, G0~G3 placeholder)
+- [x] **UT-01 Green (A-01)** — `src/magicsquare/boundary/` null 분기 (5 passed, Report/12)
+- [x] **GREEN 묶음 계획 · README To-Do** (Report/13 — A/B/I 13묶음)
+- [x] **A-02 Green** — UT-02 rows (`ERR_GRID_ROWS`, 4 passed)
+- [x] **A-04 Green** — UT-04/05 value range (`ERR_VALUE_RANGE`, 3 passed)
+- [x] **A-05 Green** — UT-06/07 empty count (`ERR_EMPTY_COUNT`, 3 passed)
+- [x] **A-06 Green** — UT-08 duplicate (`ERR_DUPLICATE`, 2 passed)
+- [x] **B-03 Green** — D-SOL `solution()` (4 passed)
+- [x] **A-07 Green** — U-FLOW execute 0-call (2 passed)
+- [x] **A-08 Green** — UT-09 OK envelope (5 passed)
+- [x] **I-01 Green** — IT-FAIL invalid E2E (3 passed)
+- [x] **I-02 Green** — IT-OK solve E2E (3 passed)
+- [x] **PyQt6 GUI** — `boundary/gui` · `python -m magicsquare` (Report/14)
+- [x] **Golden Master 회귀** — GM-TC-01~05 · approve (Report/15)
+- [x] **REFACTOR 사전 분석·계획** — ECB · SRP · 테스트 갭 (Report/16)
+- [x] REFACTOR ① 레이어·계약 — envelope · facade · E001/MagicConstant SSOT (DEF-002·003)
+- [x] REFACTOR ② 테스트·안전 — Control/Boundary/GUI 회귀 테스트 · Guard · fixture
+- [x] REFACTOR ③ 구조·유지보수 — presenter · DI · UI DRY (P1/P2)
+- [x] **REFACTOR 완료 보고서** — Report/17 · 72 passed · GM PASS
+- [x] **Ask Dual-Track 커버리지 QA** — Report/18 · NFR gate 실측 (production 변경 없음)
+- [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
+- [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
+- [ ] Mom Test · 1차 사용자 확정
+- [x] Track A 순차: **A-01~A-08** Green ✅
+- [x] Data Track · 통합 테스트 (I-01 / I-02) Green ✅
+
+---
+
+## pytest 현황 (2026-05-29)
+
+| Suite | 결과 | 비고 |
+|-------|------|------|
+| `tests/boundary/test_ac_fr01_01_null_grid.py` | **5 passed** | A-01 Green ✅ |
+| `tests/boundary/test_ut02_grid_rows.py` | **4 passed** | A-02 Green ✅ |
+| `tests/boundary/test_u_in_04_value_range.py` | **3 passed** | A-04 Green ✅ |
+| `tests/boundary/test_ut06_empty_count.py` | **3 passed** | A-05 Green ✅ |
+| `tests/boundary/test_u_in_05_duplicate.py` | **2 passed** | A-06 Green ✅ |
+| `tests/boundary/test_ut09_valid_solve.py` | **2 passed** | A-08 Green ✅ |
+| `tests/boundary/test_u_out_output_contract.py` | **3 passed** | A-08 Green ✅ |
+| `tests/boundary/test_u_flow_02_execute_isolation.py` | **2 passed** | A-07 Green ✅ |
+| `tests/boundary/` (Green suite) | **27 passed** | A-01~A-08 ✅ |
+| `tests/boundary/` (전체) | **27 passed** | ✅ |
+| `tests/entity/test_d_loc_01.py` | **1 passed** | B-02 Green ✅ |
+| `tests/entity/test_d_mis_01.py` | **1 passed** | B-02 Green ✅ |
+| `tests/entity/test_d_val.py` | **6 passed** | B-01 Green ✅ |
+| `tests/entity/test_user.py` | **9 passed** | User Entity ✅ |
+| `tests/entity/test_d_sol.py` | **4 passed** | B-03 Green ✅ |
+| `tests/entity/` (Green suite) | **21 passed** | B-01~B-03 ✅ |
+| `tests/integration/test_it_fail_validation.py` | **3 passed** | I-01 Green ✅ |
+| `tests/integration/test_it_ok_solve.py` | **3 passed** | I-02 Green ✅ |
+| `tests/integration/test_golden_master_magic_square.py` | **6 passed** | GM-TC-01~05 + baseline ✅ |
+| `tests/integration/` | **12 passed** | I-01~I-02 + Golden Master ✅ |
+| **전체 suite** | **72 passed** | Green 13/13 + GM + REFACTOR ①②③ ✅ |
+
+**Green 13/13 + Golden Master + REFACTOR ①②③ 완료** — 후속: Domain cov 95% TC 보강 · `pytest-cov` CI · PRD v1.1 ([Report/17](Report/17-refactor-completion-report.md) · [Report/18](Report/18.MagicSquare_Ask-Coverage-QA_Report.md)).
+
+---
+
+## RED 단계 To-Do 리스트
+
+> RED Skeleton 21건 + UT-01 Full RED. UT-01은 **Green 완료(A-01)** — 아래 UT-01 항목은 RED 작성 완료로 체크.
+> DEF-002 (`ERR_NULL_GRID`) — **해소** (REFACTOR ①, Report/17).
+
+### Golden Master 회귀 안전장치
+
+> Refactoring 시작 전 구축. GREEN 완료 후 즉시 적용.
+
+#### 기준 파일 생성
+- [x] GM-01: `golden_master_expected.txt` 생성
+- [x] GM-02: 정상/역순/오류 시나리오 추가
+- [x] GM-03: `git add tests/golden_master_expected.txt`
+
+#### 테스트 코드
+- [x] GM-04: `test_golden_master_magic_square` 작성
+- [x] GM-05: approve 패턴 적용
+- [x] GM-06: Golden Master 테스트 PASS 확인
+
+#### 회귀 보호
+- [x] GM-07: row-major 규칙 보호
+- [x] GM-08: 1-index 출력 보호
+- [x] GM-09: reverse 조합 fallback 보호
+- [x] GM-10: Error Contract 보호
+
+### Track A — UI / Boundary (P0: AC-FR01-01 / UT-01) — RED 작성 완료 ✅
+- [x] TC-A-01: grid=None → status=`"ERROR"` *(A-01 Green)*
+- [x] TC-A-02: code assert *(테스트: `INVALID_SIZE` — PRD drift DEF-002)*
+- [x] TC-A-03: message byte-exact *(테스트: `Grid must be 4x4.`)*
+- [x] TC-A-04: Domain `resolve` 0회 mock *(A-01 Green)*
+- [x] TC-A-07: pydantic ERROR envelope *(A-01 Green)*
+
+### Track A — P1 확장 (AC-FR01-02·03 / UT-02·03)
+- [x] TC-A-05: `grid=[]` → `ERR_GRID_ROWS` *(A-02 Green)*
+- [x] TC-A-06: 3×4 → `ERR_GRID_ROWS` *(A-02 Green)*
+- [x] UT-02 RED — `test_ut02_grid_rows.py` ×4 *(A-02)*
+
+- [x] UT-03 RED — `test_ut03_grid_cols.py` ×3 *(A-03)*
+
+### Track A — P2 (Skeleton → Full RED 대기)
+- [x] U-IN-04/05 value range — `test_u_in_04_value_range.py` *(A-04 Green)*
+- [x] UT-06/07 empty count — `test_ut06_empty_count.py` *(A-05 Green)*
+- [x] U-IN-05 duplicate — `test_u_in_05_duplicate.py` *(A-06 Green)*
+- [x] U-FLOW-02 E004/E005 — `test_u_flow_02_execute_isolation.py` *(A-07 Green)*
+- [x] U-OUT-01~03 — `test_u_out_output_contract.py` *(A-08 Green)*
+- [x] UT-09 valid solve — `test_ut09_valid_solve.py` *(A-08 Green)*
+
+### Track B — Domain Skeleton (Full RED 대기)
+- [x] D-VAL ×6 — `test_d_val.py` *(B-01 Green)*
+- [x] D-LOC + D-MIS — `test_d_loc_01.py`, `test_d_mis_01.py` *(B-02 Green)*
+- [x] D-SOL ×4 — `test_d_sol.py` *(B-03 Green)*
+
+### Track B — Domain / Logic 격리 (UT-01에서 null 커버)
+- [x] TC-B-01~03: null 입력 Domain 미진입 *(A-01 `resolve` mock — DEF-003 drift: `resolve` vs `solve_partial_grid`)*
+- [x] TC-B-04: AC-FR01-02~06 UT-01 RED 범위 외 확인
+
+### 커버리지 목표 (Report/18 실측, 2026-05-29)
+
+| 레이어 | 실측 | Gate | 판정 |
+|--------|------|------|------|
+| Domain (`entity`+`control`, IT 포함) | **94%** | ≥ 95% | ❌ |
+| Boundary (전체) | **91%** | ≥ 85% | ✅ |
+| 전역 (`src/`) | **91%** | ≥ 80% | ✅ |
+
+```powershell
+# SSOT 경로 (docs/test_plan.md §9.3)
+python -m pytest tests/entity/ tests/control/ tests/integration/ `
+  --cov=src/magicsquare/entity --cov=src/magicsquare/control --cov-report=term-missing -q
+python -m pytest tests/boundary/ --cov=src/magicsquare/boundary --cov-report=term-missing -q
+python -m pytest --cov=src --cov-report=term-missing -q
+```
+
+- [ ] Domain Logic: **95%+** (현재 94% — D-VAL·D-SOL TC 보강)
+- [x] Boundary Layer: **85%+** (91%)
+- [x] 전체 TOTAL: **80%+** (91%)
+- [ ] `pytest-cov` CI gate (`--cov-fail-under`)
+
+### 결함 목록 연결
+- [x] [defect_list.md](defect_list.md) 생성 및 발견 결함 기록 (DEF-001~006)
+- [x] DEF-001 부분 해소 — `magicsquare.boundary` 존재 · UT-01 5 passed (A-01)
+- [ ] DEF-002~006 해소 및 회귀 테스트 통과
+
+---
+
+## GREEN 단계 To-Do 리스트
+
+> **RED 1묶음 = GREEN 1묶음** (커밋 단위). 상세: [Report/13](Report/13-green-phase-readme-plan-report.md).
+> 검증 순서: `NULL → ROWS → COLS → RANGE → EMPTY_COUNT → DUPLICATE` ([Report/02](Report/02-tdd-design-report.md)).
+> Track B(B-01~B-03)는 A-01 이후 **병렬** 가능. A-08·I-*는 선행 묶음 Green 완료 후.
+
+**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** — **전부 완료 ✅**
+
+### Track A — Boundary (순차)
+
+#### A-01 · UT-01 null grid (AC-FR01-01) ✅
+- [x] RED: `test_ac_fr01_01_null_grid.py` (5 tests)
+- [x] GREEN: `grid is None` → ERROR envelope + Domain early return
+- [x] pytest: `python -m pytest tests/boundary/test_ac_fr01_01_null_grid.py -v` → **5 passed**
+- [x] 커밋 예: `feat(boundary): AC-FR01-01 null grid Green (A-01)`
+
+#### A-02 · UT-02 grid rows (AC-FR01-02) ✅
+- [x] RED: `test_ut02_grid_rows.py` (4 tests)
+- [x] GREEN: `len(grid) != 4` → `ERR_GRID_ROWS`
+- [x] pytest: `python -m pytest tests/boundary/test_ut02_grid_rows.py -v` → **4 passed**
+- [x] 커밋: `feat(boundary): AC-FR01-02 ERR_GRID_ROWS Green (A-02)`
+
+#### A-03 · UT-03 grid cols (AC-FR01-03) ✅
+- [x] RED: `test_ut03_grid_cols.py` (3 tests)
+- [x] GREEN: `len(row) != 4` → `ERR_GRID_COLS`
+- [x] pytest: `python -m pytest tests/boundary/test_ut03_grid_cols.py -v` → **3 passed**
+- [x] 커밋: `feat(boundary): AC-FR01-03 ERR_GRID_COLS Green (A-03)`
+
+#### A-04 · UT-04/05 value range (AC-FR01-04) ✅
+- [x] RED: `test_u_in_04_value_range.py` (3 tests)
+- [x] GREEN: cell ∉ `{0}∪[1,16]` → `ERR_VALUE_RANGE`
+- [x] pytest: **3 passed**
+- [x] 커밋: `feat(boundary): AC-FR01-04 ERR_VALUE_RANGE Green (A-04)`
+
+#### A-05 · UT-06/07 empty count (AC-FR01-05) ✅
+- [x] RED: `test_ut06_empty_count.py` (3 tests)
+- [x] GREEN: `count(0) != 2` → `ERR_EMPTY_COUNT`
+- [x] pytest: **3 passed**
+- [x] 커밋: `feat(boundary): AC-FR01-05 ERR_EMPTY_COUNT Green (A-05)`
+
+#### A-06 · UT-08 duplicate (AC-FR01-06) ✅
+- [x] RED: `test_u_in_05_duplicate.py` (2 tests)
+- [x] GREEN: non-zero 중복 → `ERR_DUPLICATE`
+- [x] pytest: **2 passed**
+- [x] 커밋: `feat(boundary): AC-FR01-06 ERR_DUPLICATE Green (A-06)`
+
+#### A-07 · U-FLOW execute isolation (FR-01) ✅
+- [x] RED: `test_u_flow_02_execute_isolation.py` — E004/E005 ×2
+- [x] GREEN: `ui_boundary` + `SolvePartialMagicSquare.execute` 0-call on invalid
+- [x] pytest: **2 passed**
+- [x] 커밋: `feat(boundary): U-FLOW invalid execute 0-call Green (A-07)`
+
+#### A-08 · UT-09 valid solve + U-OUT (AC-FR01-07 / FR-05) ✅
+- [x] RED: `test_u_out_output_contract.py` + `test_ut09_valid_solve.py` (5 tests)
+- [x] GREEN: valid grid → OK envelope, `int[6]` passthrough via `resolve()` → `solution()`
+- [x] pytest: `python -m pytest tests/boundary/test_ut09_valid_solve.py tests/boundary/test_u_out_output_contract.py -v` → **5 passed**
+- [x] 커밋: `feat(boundary): UT-09 OK envelope Green (A-08)`
+
+### Track B — Domain (A-01 이후 병렬)
+
+#### B-01 · D-VAL magic validator (FR-04 / DT-01~08) ✅
+- [x] RED: `test_d_val.py` (6 tests)
+- [x] GREEN: `is_magic_square()` — G0 true / broken sum·diag·set false
+- [x] pytest: **6 passed**
+- [x] 커밋: `feat(entity): D-VAL is_magic_square Green (B-01)`
+
+#### B-02 · D-LOC + D-MIS (FR-02/03 / DT-03~04) ✅
+- [x] RED: `test_d_loc_01.py`, `test_d_mis_01.py` (2 tests)
+- [x] GREEN: `find_blank_coords()`, `find_not_exist_nums()`
+- [x] pytest: **2 passed**
+- [x] 커밋: `feat(entity): D-LOC/MIS blank + missing Green (B-02)`
+
+#### B-03 · D-SOL two-cell solver (FR-05 / DT-05~07, DT-10) ✅
+- [x] RED: `test_d_sol.py` (4 tests)
+- [x] GREEN: `solution()` — forward / reverse / unsolvable
+- [x] pytest: **4 passed**
+- [x] 커밋: `feat(entity): D-SOL solution Green (B-03)`
+
+### Integration (A-08 + B-03 이후)
+
+#### I-01 · IT-FAIL invalid E2E ✅
+- [x] RED: `tests/integration/test_it_fail_validation.py` — IT-FAIL-01/02/04 ×3
+- [x] GREEN: `UIBoundary` + `ERR_NO_SOLUTION` bridge, Domain Mock **금지**
+- [x] pytest: **3 passed**
+- [x] 커밋: `feat(integration): IT-FAIL invalid E2E Green (I-01)`
+
+#### I-02 · IT-OK solve E2E ✅
+- [x] RED: `tests/integration/test_it_ok_solve.py` — IT-OK-01~03 ×3
+- [x] GREEN: E2E solve + `InMemoryMatrixRepository` save/load round-trip
+- [x] pytest: **3 passed**
+- [x] 커밋: `feat(integration): IT-OK solve E2E Green (I-02)`
+
+### Green 마일스톤 · 회귀
+
+- [x] **FR-01 입력 검증 Green** — A-01~A-07 완료
+- [x] **Domain Core Green** — B-01~B-03 완료
+- [x] **성공 경로 Green** — A-08 완료
+- [x] **Integration Green** — I-01~I-02 완료
+- [x] Boundary 레이어 커버리지 **85%+** (91%, Report/18)
+- [ ] Domain Logic 커버리지 **95%+** (94% IT 포함, Report/18)
+- [x] 전체 pytest 회귀 통과: `python -m pytest -v` → **72 passed** (GM 포함)
+- [x] 전역 커버리지 **80%+** (91%, Report/18)
+
+### Green 진행 흐름
+
+```
+Track A (순차)          Track B (병렬)
+A-01 NULL ✅            B-01 D-VAL ✅
+A-02 ROWS               B-02 LOC/MIS ✅
+A-03 COLS               B-03 SOL ✅
+A-04 RANGE                    │
+A-05 EMPTY                    │
+A-06 DUPLICATE                │
+A-07 FLOW ✅ ───────────────────┤
+A-08 SUCCESS ✅ ◄──────────────┘
+         │
+         ▼
+      I-01 IT-FAIL ✅ → I-02 IT-OK ✅
+         │
+         ▼
+      PyQt6 GUI (optional)
+         │
+         ▼
+      Golden Master ✅ → REFACTOR ①②③ (Report/17) → Ask cov QA (Report/18)
+```
+
+---
+
+## REFACTOR 단계 To-Do 리스트
+
+> **전제:** `.cursorrules` refactor_phase — observable behavior·E001~E007·int[6] 불변 · pytest PASS 유지.  
+> 계획: [Report/16](Report/16-refactor-plan-ecb-analysis-report.md) · 완료: [Report/17](Report/17-refactor-completion-report.md) · Transcript: [Prompting/17](Prompting/17-refactor-completion-prompt.md)  
+> **①②③ 구현 완료** — 잔여: Domain cov 95% · `pytest-cov` CI · offscreen smoke(수동) · [Report/18](Report/18.MagicSquare_Ask-Coverage-QA_Report.md)
+
+### ① 레이어 · 계약 (ECB · SSOT)
+
+- [x] E001 null grid SSOT (DEF-002 — `ERR_NULL_GRID` / `Input grid is null.`, UT-01)
+- [x] facade spy/mock 대상 단일화 (DEF-003 — `SolvePartialMagicSquare.execute`)
+- [x] Control envelope 제거 → `boundary/response_mapper.py` (E006/E007)
+- [x] `entry.py` / `ui_boundary.py` facade 통합 (`validate_and_solve` → `UIBoundary.solve`)
+- [x] `InputValidator` — `MagicConstant` SSOT (4 / 16 / 2)
+
+### ② 테스트 · 안전 (회귀 게이트)
+
+- [x] `tests/control/test_solve_partial_execute.py` — `SolvePartialMagicSquare.execute`
+- [x] `tests/boundary/test_ui_boundary.py` — U-OUT · U-FLOW · UT-09 (`UIBoundary` 직접)
+- [x] `tests/boundary/gui/test_main_window.py` — offscreen PyQt · OK/ERROR envelope 표시
+- [x] `main_window.py` — `except Exception` 제거 · envelope 분기만
+- [x] `EXAMPLE_GRID` → `example_grids` + `tests/conftest.py` fixture (Screen literal 제거)
+
+### ③ 구조 · 유지보수 (SRP · DRY · 명명)
+
+- [x] `result_presenter` + `grid_panel.apply_solution_tuple` (`int[6]` 표시 분리)
+- [x] `InputValidator` DI — `UIBoundary` / `entry` module facade (매 solve 생성 제거)
+- [x] ERROR/Ready UI reset — `_reset_ready_ui` Extract Method
+- [x] `solution` import Rename → `solve_two_cell_partial_grid` (Control)
+- [x] `_build_ui` Extract Method — intro / buttons / status / signals
+
+### Refactor 완료 게이트
+
+- [x] `python -m pytest tests/ -q` → **72 passed**
+- [x] `pytest -m golden_master` → baseline diff 없음 (6 passed)
+- [x] `solve_partial_magic_square.py` → `magicsquare.boundary` import **0건**
+- [x] 커버리지 실측 (Report/18): boundary **91%** ✅ · Domain **94%** ❌ · 전체 **91%** ✅
+- [ ] `pytest-cov` CI gate (`--cov-fail-under`) 미구성
+- [ ] `QT_QPA_PLATFORM=offscreen python -m magicsquare` smoke PASS (수동)
+
+**Entity `two_cell_solver` — Refactor 범위 제외** (ECB 위치 적합).
 
 ---
 
 ## 미해결 항목
 
-- **1차 사용자** — 본인 / 동료 학습자 / 교실 등, 아직 확정되지 않음
-- **4×4 고정 여부** — 학습 목표와 사용자 필요 사이 트레이드오프
-- **입출력 계약** — 구현 전 문장 수준으로 정의 예정
+- **1차 사용자** — Mom Test 미완 (PRD Persona: TDD 학습자로 가정)
+- **ECB harmonization** — PRD §22 DEC-01 (Judge/Solver → entity vs control)
+- **PRD 검토 보완** — AC-ID 전수 Traceability, DT-07/12 AC (Report/07 P0~P1)
+- **`pytest-cov` CI** — 커버리지 gate 미구성 ([Report/18](Report/18.MagicSquare_Ask-Coverage-QA_Report.md) §7)
+- **Domain cov 95%** — 94% (IT 포함); D-VAL 열/대각·D-SOL forward TC 보강 필요
+- **GM 경로** — `test_gm_01_*.py` 없음; 실경로 `tests/integration/test_golden_master_magic_square.py`
+- **DEF-001** — **해소** — boundary · control · data · integration · gui
+- **DEF-002·003** — **해소** (REFACTOR ① — `ERR_NULL_GRID` SSOT · `execute` mock · `response_mapper`)
+- **REFACTOR ①②③** — **완료** ([Report/17](Report/17-refactor-completion-report.md))
+- **Ask 커버리지 QA** — **완료** ([Report/18](Report/18.MagicSquare_Ask-Coverage-QA_Report.md))
+
+---
+
+## 로컬 실행
+
+### 가상환경 (권장)
+
+```powershell
+cd c:\DEV\MagicSquare_
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[dev,gui]"
+```
+
+### GUI (PyQt6)
+
+4×4 격자를 입력하고 **Solve**로 마방진 완성 결과를 확인합니다. Domain 로직은 `UIBoundary` → Control → Entity 경로를 그대로 사용합니다.
+
+```powershell
+pip install -e ".[gui]"
+python -m magicsquare
+# 또는
+magicsquare-gui
+```
+
+| 동작 | 설명 |
+|------|------|
+| **Load Example** | UT-09 부분 격자 로드 |
+| **Solve** | 검증 후 `[r1,c1,n1,r2,c2,n2]` 반환 또는 ERROR 표시 |
+| **Clear** | 격자·결과 초기화 |
+
+셀 값: `0` = 빈칸, `1`~`16` = 채워진 숫자 (정확히 2개의 빈칸 필요).
+
+### 테스트
+
+```powershell
+# 전체 suite (72 passed, GM 포함)
+python -m pytest tests/ -v
+
+# Golden Master only
+python -m pytest tests/integration/test_golden_master_magic_square.py -v -m golden_master
+
+# Boundary (27 passed)
+python -m pytest tests/boundary/ -v
+
+# Integration (6 passed)
+python -m pytest tests/integration/ -v
+
+# User Entity (9 passed)
+python -m pytest tests/entity/test_user.py -v
+```
+
+### 커버리지 HTML
+
+> Report/10 이후 `tests/entity/`에는 RED Skeleton(`test_d_*.py`)이 포함되어 **기본 수집이 중단**됩니다. User Entity만 보려면 아래 **권장** 명령을 사용하세요 ([Report/11](Report/11-coverage-html-qa-report.md), DEF-004).
+
+```powershell
+# 권장 — User Entity만 (9 passed, htmlcov 생성)
+python -m pytest tests/entity/test_user.py --cov=src --cov-report=html
+start htmlcov\index.html
+
+# 터미널 누락 라인 + HTML
+python -m pytest tests/entity/test_user.py --cov=src --cov-report=term-missing --cov-report=html
+
+# 대안 — RED Skeleton 수집 ERROR 무시 (9 passed + 4 errors, exit 1)
+python -m pytest tests/entity/ --continue-on-collection-errors --cov=src --cov-report=html
+start htmlcov\index.html
+```
+
+> DEF-001 부분 해소 후 boundary A-01은 수집 성공. `test_d_*` Skeleton은 여전히 `entity.services` import ERROR ([Report/11](Report/11-coverage-html-qa-report.md), DEF-004).
 
 ---
 
 ## 방법론 참고
 
-- **The Mom Test** — 가설이 아닌 관찰, “누가 왜 힘들어하는가”에 집중
-- **5 Whys** — 표면 요구에서 구조적 불편·통제 대상 도출
-- **TDD 마인드** — 테스트 문법보다 **규칙을 먼저 고정**하고 구현이 따르게 하는 설계 태도
+- **The Mom Test** — 가설이 아닌 관찰
+- **5 Whys** — 표면 요구에서 구조적 불편 도출
+- **Dual-Track TDD** — Boundary(UT-*) ∥ Domain(DT-*), Red → Green → Refactor
 
 ---
 
