@@ -210,13 +210,16 @@ MagicSquare_/
 - [x] **A-05 Green** — UT-06/07 empty count (`ERR_EMPTY_COUNT`, 3 passed)
 - [x] **A-06 Green** — UT-08 duplicate (`ERR_DUPLICATE`, 2 passed)
 - [x] **B-03 Green** — D-SOL `solution()` (4 passed)
+- [x] **A-07 Green** — U-FLOW execute 0-call (2 passed)
+- [x] **A-08 Green** — UT-09 OK envelope (5 passed)
+- [x] **I-01 Green** — IT-FAIL invalid E2E (3 passed)
+- [x] **I-02 Green** — IT-OK solve E2E (3 passed)
 - [ ] RED 테스트 ↔ PRD SSOT 정렬 (`INVALID_SIZE` vs `ERR_NULL_GRID` — DEF-002·003)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
 - [ ] Mom Test · 1차 사용자 확정
-- [ ] Track B 병렬: **B-03** Green
-- [ ] Track A 순차: **A-07** Green · ~~A-08~~ ✅
-- [ ] Data Track · 통합 테스트 (I-01 / I-02)
+- [x] Track A 순차: **A-01~A-08** Green ✅
+- [x] Data Track · 통합 테스트 (I-01 / I-02) Green ✅
 
 ---
 
@@ -231,16 +234,21 @@ MagicSquare_/
 | `tests/boundary/test_u_in_05_duplicate.py` | **2 passed** | A-06 Green ✅ |
 | `tests/boundary/test_ut09_valid_solve.py` | **2 passed** | A-08 Green ✅ |
 | `tests/boundary/test_u_out_output_contract.py` | **3 passed** | A-08 Green ✅ |
-| `tests/boundary/` (Green suite) | **25 passed** | A-01~A-06, A-08 ✅ |
-| `tests/boundary/` (전체) | **25 passed, 1 error** | U-FLOW collection ERROR (A-07) |
+| `tests/boundary/test_u_flow_02_execute_isolation.py` | **2 passed** | A-07 Green ✅ |
+| `tests/boundary/` (Green suite) | **27 passed** | A-01~A-08 ✅ |
+| `tests/boundary/` (전체) | **27 passed** | ✅ |
 | `tests/entity/test_d_loc_01.py` | **1 passed** | B-02 Green ✅ |
 | `tests/entity/test_d_mis_01.py` | **1 passed** | B-02 Green ✅ |
 | `tests/entity/test_d_val.py` | **6 passed** | B-01 Green ✅ |
 | `tests/entity/test_user.py` | **9 passed** | User Entity ✅ |
 | `tests/entity/test_d_sol.py` | **4 passed** | B-03 Green ✅ |
 | `tests/entity/` (Green suite) | **21 passed** | B-01~B-03 ✅ |
+| `tests/integration/test_it_fail_validation.py` | **3 passed** | I-01 Green ✅ |
+| `tests/integration/test_it_ok_solve.py` | **3 passed** | I-02 Green ✅ |
+| `tests/integration/` | **6 passed** | I-01~I-02 ✅ |
+| **전체 Green suite** | **54 passed** | 13/13 묶음 완료 ✅ |
 
-**다음 Green 착수:** [A-07](#a-07--u-flow-execute-isolation-fr-01) (Track A) 또는 [I-01](#i-01--it-fail-validation-errors-integration) *(A-08 완료)*
+**Green 13/13 완료** — REFACTOR·커버리지·DEF-002 SSOT 정렬은 후속.
 
 ---
 
@@ -267,7 +275,7 @@ MagicSquare_/
 - [x] U-IN-04/05 value range — `test_u_in_04_value_range.py` *(A-04 Green)*
 - [x] UT-06/07 empty count — `test_ut06_empty_count.py` *(A-05 Green)*
 - [x] U-IN-05 duplicate — `test_u_in_05_duplicate.py` *(A-06 Green)*
-- [ ] U-FLOW-02 E004/E005 — `test_u_flow_02_execute_isolation.py` *(A-07)*
+- [x] U-FLOW-02 E004/E005 — `test_u_flow_02_execute_isolation.py` *(A-07 Green)*
 - [x] U-OUT-01~03 — `test_u_out_output_contract.py` *(A-08 Green)*
 - [x] UT-09 valid solve — `test_ut09_valid_solve.py` *(A-08 Green)*
 
@@ -298,7 +306,7 @@ MagicSquare_/
 > 검증 순서: `NULL → ROWS → COLS → RANGE → EMPTY_COUNT → DUPLICATE` ([Report/02](Report/02-tdd-design-report.md)).
 > Track B(B-01~B-03)는 A-01 이후 **병렬** 가능. A-08·I-*는 선행 묶음 Green 완료 후.
 
-**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01~A-06, A-08, B-01~B-03 완료, **3 remaining**)
+**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** — **전부 완료 ✅**
 
 ### Track A — Boundary (순차)
 
@@ -338,11 +346,11 @@ MagicSquare_/
 - [x] pytest: **2 passed**
 - [x] 커밋: `feat(boundary): AC-FR01-06 ERR_DUPLICATE Green (A-06)`
 
-#### A-07 · U-FLOW execute isolation (FR-01)
-- [ ] RED: `test_u_flow_02_execute_isolation.py` — E004/E005만 *(null 격리는 A-01 포함)*
-- [ ] GREEN: `ui_boundary` + invalid 입력 시 `execute` 0회
-- [ ] pytest: `python -m pytest tests/boundary/test_u_flow_02_execute_isolation.py -v`
-- [ ] 커밋 예: `feat(boundary): U-FLOW invalid execute 0-call Green (A-07)`
+#### A-07 · U-FLOW execute isolation (FR-01) ✅
+- [x] RED: `test_u_flow_02_execute_isolation.py` — E004/E005 ×2
+- [x] GREEN: `ui_boundary` + `SolvePartialMagicSquare.execute` 0-call on invalid
+- [x] pytest: **2 passed**
+- [x] 커밋: `feat(boundary): U-FLOW invalid execute 0-call Green (A-07)`
 
 #### A-08 · UT-09 valid solve + U-OUT (AC-FR01-07 / FR-05) ✅
 - [x] RED: `test_u_out_output_contract.py` + `test_ut09_valid_solve.py` (5 tests)
@@ -372,24 +380,24 @@ MagicSquare_/
 
 ### Integration (A-08 + B-03 이후)
 
-#### I-01 · IT-FAIL invalid E2E
-- [ ] RED: `tests/integration/test_it_fail_*.py` *(미작성)* — IT-FAIL-01~02, 04
-- [ ] GREEN: 실 Boundary + Control, Domain Mock **금지**, invalid → ERROR
-- [ ] pytest: `python -m pytest tests/integration/ -v -k fail`
-- [ ] 커밋 예: `feat(integration): IT-FAIL invalid E2E Green (I-01)`
+#### I-01 · IT-FAIL invalid E2E ✅
+- [x] RED: `tests/integration/test_it_fail_validation.py` — IT-FAIL-01/02/04 ×3
+- [x] GREEN: `UIBoundary` + `ERR_NO_SOLUTION` bridge, Domain Mock **금지**
+- [x] pytest: **3 passed**
+- [x] 커밋: `feat(integration): IT-FAIL invalid E2E Green (I-01)`
 
-#### I-02 · IT-OK solve E2E
-- [ ] RED: `tests/integration/test_it_ok_*.py` *(미작성)* — IT-OK-01~03
-- [ ] GREEN: E2E solve + save/load round-trip
-- [ ] pytest: `python -m pytest tests/integration/ -v -k ok`
-- [ ] 커밋 예: `feat(integration): IT-OK solve E2E Green (I-02)`
+#### I-02 · IT-OK solve E2E ✅
+- [x] RED: `tests/integration/test_it_ok_solve.py` — IT-OK-01~03 ×3
+- [x] GREEN: E2E solve + `InMemoryMatrixRepository` save/load round-trip
+- [x] pytest: **3 passed**
+- [x] 커밋: `feat(integration): IT-OK solve E2E Green (I-02)`
 
 ### Green 마일스톤 · 회귀
 
-- [ ] **FR-01 입력 검증 Green** — A-01~A-06 완료
+- [x] **FR-01 입력 검증 Green** — A-01~A-07 완료
 - [x] **Domain Core Green** — B-01~B-03 완료
 - [x] **성공 경로 Green** — A-08 완료
-- [ ] **Integration Green** — I-01~I-02 완료
+- [x] **Integration Green** — I-01~I-02 완료
 - [ ] Boundary 레이어 커버리지 **85%+**
 - [ ] Domain Logic 커버리지 **95%+**
 - [ ] 전체 pytest 회귀 통과: `python -m pytest -v`
@@ -419,7 +427,7 @@ A-08 SUCCESS ◄────────────────┘
 - **ECB harmonization** — PRD §22 DEC-01 (Judge/Solver → entity vs control)
 - **PRD 검토 보완** — AC-ID 전수 Traceability, DT-07/12 AC (Report/07 P0~P1)
 - **`pytest-cov` CI** — 커버리지 gate 미구성
-- **DEF-001** — `magicsquare.boundary` **부분 해소** (A-01, A-08). U-FLOW만 `ui_boundary` 미구현으로 collection ERROR 잔존
+- **DEF-001** — `magicsquare.boundary` **해소** (A-01, A-07, A-08). Control/Data 레이어 추가 (I-01~I-02)
 - **RED 테스트 계약 drift** — `INVALID_SIZE` vs PRD `ERR_NULL_GRID` (DEF-002) · `resolve` vs `solve_partial_grid` (DEF-003)
 
 ---
