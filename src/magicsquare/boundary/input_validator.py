@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from magicsquare.boundary.schemas import (
+    ERR_EMPTY_COUNT_CODE,
+    ERR_EMPTY_COUNT_MESSAGE,
     ERR_GRID_COLS_CODE,
     ERR_GRID_COLS_MESSAGE,
     ERR_GRID_ROWS_CODE,
@@ -57,4 +59,11 @@ class InputValidator:
                         code=ERR_VALUE_RANGE_CODE,
                         message=ERR_VALUE_RANGE_MESSAGE,
                     )
+        empty_count = sum(cell == 0 for row in grid for cell in row)
+        if empty_count != 2:
+            return FailureResponse(
+                status="ERROR",
+                code=ERR_EMPTY_COUNT_CODE,
+                message=ERR_EMPTY_COUNT_MESSAGE,
+            )
         return None

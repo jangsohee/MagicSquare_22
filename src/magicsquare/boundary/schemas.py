@@ -18,6 +18,11 @@ ERR_VALUE_RANGE_MESSAGE = (
     "Cell value must be 0 or between 1 and 16 inclusive."
 )
 
+ERR_EMPTY_COUNT_CODE = "ERR_EMPTY_COUNT"
+ERR_EMPTY_COUNT_MESSAGE = (
+    "Grid must contain exactly 2 empty cells (value 0)."
+)
+
 
 class FailureResponse(TypedDict):
     """ERROR envelope returned when Boundary validation fails."""
