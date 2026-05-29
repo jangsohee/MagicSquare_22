@@ -3,7 +3,7 @@
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
 Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> **현재 단계:** **GREEN 6/13** (A-01~A-06 ✅) · boundary **20 passed** · [GREEN To-Do](#green-단계-to-do-리스트) · Report/13
+> **현재 단계:** **GREEN 7/13** (A-01~A-06, B-01 ✅) · boundary **20 passed** · entity **15 passed** · [GREEN To-Do](#green-단계-to-do-리스트)
 
 ---
 
@@ -209,11 +209,12 @@ MagicSquare_/
 - [x] **A-04 Green** — UT-04/05 value range (`ERR_VALUE_RANGE`, 3 passed)
 - [x] **A-05 Green** — UT-06/07 empty count (`ERR_EMPTY_COUNT`, 3 passed)
 - [x] **A-06 Green** — UT-08 duplicate (`ERR_DUPLICATE`, 2 passed)
+- [x] **B-01 Green** — D-VAL `is_magic_square()` (6 passed)
 - [ ] RED 테스트 ↔ PRD SSOT 정렬 (`INVALID_SIZE` vs `ERR_NULL_GRID` — DEF-002·003)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
 - [ ] Mom Test · 1차 사용자 확정
-- [ ] Track B 병렬: **B-01** D-VAL Green
+- [ ] Track B 병렬: **B-02~B-03** Green
 - [ ] Track A 순차: **A-07~A-08** Green
 - [ ] Data Track · 통합 테스트 (I-01 / I-02)
 
@@ -230,10 +231,12 @@ MagicSquare_/
 | `tests/boundary/test_u_in_05_duplicate.py` | **2 passed** | A-06 Green ✅ |
 | `tests/boundary/` (Green suite) | **20 passed** | A-01~A-06 ✅ |
 | `tests/boundary/` (전체) | **20 passed, 2 errors** | U-FLOW/U-OUT collection ERROR |
-| `tests/entity/test_user.py` | **9 passed** | User Entity Green |
-| `tests/entity/test_d_*.py` | **4 errors** (수집) | `entity.services` 미구현 |
+| `tests/entity/test_d_val.py` | **6 passed** | B-01 Green ✅ |
+| `tests/entity/test_user.py` | **9 passed** | User Entity ✅ |
+| `tests/entity/test_d_*.py` (Green) | **6 passed** | B-01 ✅ |
+| `tests/entity/test_d_*.py` (전체) | **6 passed, 3 errors** | B-02/B-03 collection ERROR |
 
-**다음 Green 착수:** [A-07](#a-07--u-flow-execute-isolation-fr-01) (순차) 또는 [B-01](#b-01--d-val-magic-validator-fr-04--dt-0108) (병렬)
+**다음 Green 착수:** [B-02](#b-02--d-loc--d-mis-fr-0203--dt-0304) (병렬) 또는 [A-07](#a-07--u-flow-execute-isolation-fr-01) (순차)
 
 ---
 
@@ -264,7 +267,7 @@ MagicSquare_/
 - [ ] U-OUT-01~03 — `test_u_out_output_contract.py` *(A-08)*
 
 ### Track B — Domain Skeleton (Full RED 대기)
-- [ ] D-VAL ×6 — `test_d_val.py` *(B-01)*
+- [x] D-VAL ×6 — `test_d_val.py` *(B-01 Green)*
 - [ ] D-LOC + D-MIS — `test_d_loc_01.py`, `test_d_mis_01.py` *(B-02)*
 - [ ] D-SOL ×4 — `test_d_sol.py` *(B-03)*
 
@@ -290,7 +293,7 @@ MagicSquare_/
 > 검증 순서: `NULL → ROWS → COLS → RANGE → EMPTY_COUNT → DUPLICATE` ([Report/02](Report/02-tdd-design-report.md)).
 > Track B(B-01~B-03)는 A-01 이후 **병렬** 가능. A-08·I-*는 선행 묶음 Green 완료 후.
 
-**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01~A-06 완료, **7 remaining**)
+**묶음 요약:** Track A 8 · Track B 3 · Integration 2 = **13 Green 묶음** (A-01~A-06, B-01 완료, **6 remaining**)
 
 ### Track A — Boundary (순차)
 
@@ -344,11 +347,11 @@ MagicSquare_/
 
 ### Track B — Domain (A-01 이후 병렬)
 
-#### B-01 · D-VAL magic validator (FR-04 / DT-01~08)
-- [ ] RED: `test_d_val.py` Full RED (6 tests)
-- [ ] GREEN: `is_magic_square()` — G0 true / broken sum·diag·set false
-- [ ] pytest: `python -m pytest tests/entity/test_d_val.py -v`
-- [ ] 커밋 예: `feat(entity): D-VAL is_magic_square Green (B-01)`
+#### B-01 · D-VAL magic validator (FR-04 / DT-01~08) ✅
+- [x] RED: `test_d_val.py` (6 tests)
+- [x] GREEN: `is_magic_square()` — G0 true / broken sum·diag·set false
+- [x] pytest: **6 passed**
+- [x] 커밋: `feat(entity): D-VAL is_magic_square Green (B-01)`
 
 #### B-02 · D-LOC + D-MIS (FR-02/03 / DT-03~04)
 - [ ] RED: `test_d_loc_01.py`, `test_d_mis_01.py` Full RED
@@ -379,7 +382,7 @@ MagicSquare_/
 ### Green 마일스톤 · 회귀
 
 - [ ] **FR-01 입력 검증 Green** — A-01~A-06 완료
-- [ ] **Domain Core Green** — B-01~B-03 완료
+- [ ] **Domain Core Green** — B-02~B-03 완료
 - [ ] **성공 경로 Green** — A-08 완료
 - [ ] **Integration Green** — I-01~I-02 완료
 - [ ] Boundary 레이어 커버리지 **85%+**
@@ -390,7 +393,7 @@ MagicSquare_/
 
 ```
 Track A (순차)          Track B (병렬)
-A-01 NULL ✅            B-01 D-VAL
+A-01 NULL ✅            B-01 D-VAL ✅
 A-02 ROWS               B-02 LOC/MIS
 A-03 COLS               B-03 SOL
 A-04 RANGE                    │
