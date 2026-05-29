@@ -3,7 +3,7 @@
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
 Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> **현재 단계:** **RED** — AC-FR01-01 / UT-01 Boundary 테스트 작성 완료 · `test_plan.md` · `defect_list.md` (DEF-001~006 Open) · Boundary **Green 미착수** (`magicsquare.boundary` 없음) · Entity **9 passed**
+> **현재 단계:** **RED (Skeleton)** — Report/09 설계표 → **pytest 스켈레톤 21건** (Report/10) · UT-01 Full RED + Track A/B Skeleton · `test_plan.md` · `defect_list.md` (DEF-001~006 Open) · Boundary/Domain **Green 미착수** · User Entity **9 passed**
 
 ---
 
@@ -78,8 +78,13 @@ MagicSquare_/
 │   ├── control/                           # (예정)
 │   └── data/                              # (예정)
 ├── tests/
-│   ├── entity/test_user.py                # 9 passed
-│   ├── boundary/test_ac_fr01_01_null_grid.py  # RED — 수집 ERROR
+│   ├── conftest.py                        # G0~G3 placeholder (주석)
+│   ├── entity/
+│   │   ├── test_user.py                   # 9 passed
+│   │   └── test_d_*.py                    # RED Skeleton — 수집 ERROR
+│   ├── boundary/
+│   │   ├── test_ac_fr01_01_null_grid.py   # UT-01 Full RED — 수집 ERROR
+│   │   └── test_u_*.py                    # RED Skeleton — 수집 ERROR
 │   └── data/ · integration/               # (예정)
 ├── Report/
 │   ├── 01-problem-definition-report.md
@@ -89,7 +94,10 @@ MagicSquare_/
 │   ├── 05-cursor-agents-prompt-set-report.md
 │   ├── 06-user-journey-to-scenario-verification-report.md
 │   ├── 07-prd-creation-and-review-report.md
-│   └── 08-test-plan-red-phase-report.md   # test_plan · RED · QA
+│   ├── 08-test-plan-red-phase-report.md   # test_plan · RED · QA
+│   ├── 09-dual-track-red-design-report.md # FR-01~05 RED 설계표
+│   ├── 10-dual-track-red-skeleton-report.md # RED Skeleton pytest 21건
+│   └── 11-coverage-html-qa-report.md      # htmlcov workaround · DEF-004
 └── Prompting/
     ├── 01-problem-definition-prompt.md
     ├── 02-tdd-design-prompt.md
@@ -98,7 +106,10 @@ MagicSquare_/
     ├── 05-cursor-agents-prompt-set-prompt.md
     ├── 06-user-journey-to-scenario-verification-prompt.md
     ├── 07-prd-creation-and-review-prompt.md
-    └── 08-test-plan-red-phase-prompt.md
+    ├── 08-test-plan-red-phase-prompt.md
+    ├── 09-dual-track-red-design-prompt.md
+    ├── 10-dual-track-red-skeleton-prompt.md
+    └── 11-coverage-html-qa-prompt.md
 ```
 
 ---
@@ -116,6 +127,9 @@ MagicSquare_/
 | [User Journey 보고서](Report/06-user-journey-to-scenario-verification-report.md) | Epic → Story → Scenario → Verification |
 | [PRD 작성·검토 보고서](Report/07-prd-creation-and-review-report.md) | PRD 산출·7항목 검토·P0~P2 개선 권장 |
 | [테스트 플랜·RED·QA 보고서](Report/08-test-plan-red-phase-report.md) | test_plan · boundary RED · defect_list · 커버리지 이슈 |
+| [Dual-Track RED 설계 보고서](Report/09-dual-track-red-design-report.md) | U-IN/OUT/FLOW · D-LOC/MIS/VAL/SOL · G0~G3 · I1~I11 |
+| [Dual-Track RED Skeleton 보고서](Report/10-dual-track-red-skeleton-report.md) | pytest 스켈레톤 21건 · conftest · RED 검증 |
+| [커버리지 HTML QA 보고서](Report/11-coverage-html-qa-report.md) | htmlcov 생성 workaround · DEF-004 · Report/10 이후 |
 
 ### 설계·규칙·에이전트
 
@@ -138,6 +152,9 @@ MagicSquare_/
 | [06 User Journey](Prompting/06-user-journey-to-scenario-verification-prompt.md) | |
 | [07 PRD 작성·검토](Prompting/07-prd-creation-and-review-prompt.md) | |
 | [08 테스트 플랜·RED·QA](Prompting/08-test-plan-red-phase-prompt.md) | AC-FR01-01 · test_plan · boundary RED · defect_list |
+| [09 Dual-Track RED 설계](Prompting/09-dual-track-red-design-prompt.md) | FR-01~05 RED 설계표 · Track A/B |
+| [10 Dual-Track RED Skeleton](Prompting/10-dual-track-red-skeleton-prompt.md) | Report/09 → pytest Skeleton 21건 |
+| [11 커버리지 HTML QA](Prompting/11-coverage-html-qa-prompt.md) | htmlcov 실패 진단 · workaround |
 
 ### Cursor Rules
 
@@ -176,6 +193,8 @@ MagicSquare_/
 - [x] **테스트 플랜** (`docs/test_plan.md`, Report/08)
 - [x] **UT-01 RED** — `tests/boundary/test_ac_fr01_01_null_grid.py` (5 tests, 수집 ERROR = 의도된 RED)
 - [x] **결함 목록** (`defect_list.md`, DEF-001~006)
+- [x] **Dual-Track RED 설계표** (Report/09 — U-IN/OUT/FLOW, D-LOC/MIS/VAL/SOL)
+- [x] **Dual-Track RED Skeleton** (Report/10 — 21 pytest 스켈레톤, G0~G3 placeholder)
 - [ ] **UT-01 Green** — `src/magicsquare/boundary/` 최소 구현 (DEF-001)
 - [ ] RED 테스트 ↔ PRD SSOT 정렬 (`ERR_NULL_GRID`, `solve_partial_grid` — DEF-002·003)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
@@ -256,16 +275,22 @@ python -m pytest tests/boundary/ -v
 
 ### 커버리지 HTML
 
+> Report/10 이후 `tests/entity/`에는 RED Skeleton(`test_d_*.py`)이 포함되어 **기본 수집이 중단**됩니다. User Entity만 보려면 아래 **권장** 명령을 사용하세요 ([Report/11](Report/11-coverage-html-qa-report.md), DEF-004).
+
 ```powershell
-# boundary 제외 시 htmlcov 생성
-python -m pytest tests/entity/ --cov=src --cov-report=html
+# 권장 — User Entity만 (9 passed, htmlcov 생성)
+python -m pytest tests/entity/test_user.py --cov=src --cov-report=html
 start htmlcov\index.html
 
-# 또는
-python -m pytest --ignore=tests/boundary --cov=src --cov-report=html
+# 터미널 누락 라인 + HTML
+python -m pytest tests/entity/test_user.py --cov=src --cov-report=term-missing --cov-report=html
+
+# 대안 — RED Skeleton 수집 ERROR 무시 (9 passed + 4 errors, exit 1)
+python -m pytest tests/entity/ --continue-on-collection-errors --cov=src --cov-report=html
+start htmlcov\index.html
 ```
 
-> 전체 `pytest --cov=src --cov-report=html` 은 boundary 수집 실패 시 `htmlcov/`가 생기지 않을 수 있음 ([DEF-004](defect_list.md)).
+> `tests/entity/` 또는 `--ignore=tests/boundary`만으로는 `test_d_*` import ERROR로 **htmlcov 미생성**될 수 있음. 전체 `pytest --cov=src`는 boundary·Skeleton RED 해소 후 (DEF-001).
 
 ---
 
