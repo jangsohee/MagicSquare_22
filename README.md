@@ -3,7 +3,7 @@
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
 Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> **현재 단계:** 구현 전 **PRD** 확정(`docs/PRD_MagicSquare.md`) · User Journey(Report/06) · Cursor Rules 5파일 · User Entity 1차 구현 · 마방진 핵심(DT-01) **착수 전**
+> **현재 단계:** **RED** — AC-FR01-01 / UT-01 Boundary 테스트 작성 완료 · `test_plan.md` · `defect_list.md` (DEF-001~006 Open) · Boundary **Green 미착수** (`magicsquare.boundary` 없음) · Entity **9 passed**
 
 ---
 
@@ -66,18 +66,21 @@ MagicSquare_/
 │   ├── rules/                             # magicsquare-*.mdc (5개)
 │   └── agents/                            # 역할별 Cursor Agent (8개)
 ├── docs/
-│   └── PRD_MagicSquare.md                 # 구현 전 PRD (v1.0 Draft)
+│   ├── PRD_MagicSquare.md                 # 구현 전 PRD (v1.0 Draft)
+│   └── test_plan.md                       # FR-01 / AC-FR01-01 테스트 계획
+├── defect_list.md                         # 결함 DEF-001~006 (Open)
 ├── README.md
-├── pyproject.toml                         # pytest · black · ruff
+├── pyproject.toml                         # pytest · pytest-cov · pydantic · black · ruff
+├── .venv/                                 # 로컬 가상환경 (gitignore)
 ├── src/magicsquare/                       # Python ECB
-│   ├── entity/                            # Domain (User Entity 구현됨)
-│   ├── boundary/                          # I/O 검증·응답 (예정)
-│   ├── control/                           # Use case (예정)
-│   └── data/                              # Repository (예정)
+│   ├── entity/                            # User Entity 구현됨
+│   ├── boundary/                          # (미구현 — RED 원인)
+│   ├── control/                           # (예정)
+│   └── data/                              # (예정)
 ├── tests/
-│   ├── entity/                            # test_user.py (9 passed)
-│   ├── boundary/ · data/ · integration/   # (예정)
-│   └── conftest.py                        # (예정)
+│   ├── entity/test_user.py                # 9 passed
+│   ├── boundary/test_ac_fr01_01_null_grid.py  # RED — 수집 ERROR
+│   └── data/ · integration/               # (예정)
 ├── Report/
 │   ├── 01-problem-definition-report.md
 │   ├── 02-tdd-design-report.md            # 계약·TC-ID SSOT
@@ -85,7 +88,8 @@ MagicSquare_/
 │   ├── 04-magicsquare-rules-consolidation-report.md
 │   ├── 05-cursor-agents-prompt-set-report.md
 │   ├── 06-user-journey-to-scenario-verification-report.md
-│   └── 07-prd-creation-and-review-report.md
+│   ├── 07-prd-creation-and-review-report.md
+│   └── 08-test-plan-red-phase-report.md   # test_plan · RED · QA
 └── Prompting/
     ├── 01-problem-definition-prompt.md
     ├── 02-tdd-design-prompt.md
@@ -93,7 +97,8 @@ MagicSquare_/
     ├── 04-magicsquare-rules-consolidation-prompt.md
     ├── 05-cursor-agents-prompt-set-prompt.md
     ├── 06-user-journey-to-scenario-verification-prompt.md
-    └── 07-prd-creation-and-review-prompt.md
+    ├── 07-prd-creation-and-review-prompt.md
+    └── 08-test-plan-red-phase-prompt.md
 ```
 
 ---
@@ -105,9 +110,12 @@ MagicSquare_/
 | 문서 | 설명 |
 |------|------|
 | [**PRD**](docs/PRD_MagicSquare.md) | 구현 전 기준 — FR, BR, I/O·Error 계약, Dual-Track, Traceability |
+| [**테스트 플랜**](docs/test_plan.md) | AC-FR01-01 앵커 · UT-01~08 · pytest-cov 전략 |
+| [**결함 목록**](defect_list.md) | DEF-001~006 (RED 단계 Open) |
 | [TDD 설계 보고서](Report/02-tdd-design-report.md) | TC-ID·Error message·Invariant **단일 진실 원천** |
 | [User Journey 보고서](Report/06-user-journey-to-scenario-verification-report.md) | Epic → Story → Scenario → Verification |
 | [PRD 작성·검토 보고서](Report/07-prd-creation-and-review-report.md) | PRD 산출·7항목 검토·P0~P2 개선 권장 |
+| [테스트 플랜·RED·QA 보고서](Report/08-test-plan-red-phase-report.md) | test_plan · boundary RED · defect_list · 커버리지 이슈 |
 
 ### 설계·규칙·에이전트
 
@@ -129,6 +137,7 @@ MagicSquare_/
 | [05 Agent 세트](Prompting/05-cursor-agents-prompt-set-prompt.md) | |
 | [06 User Journey](Prompting/06-user-journey-to-scenario-verification-prompt.md) | |
 | [07 PRD 작성·검토](Prompting/07-prd-creation-and-review-prompt.md) | |
+| [08 테스트 플랜·RED·QA](Prompting/08-test-plan-red-phase-prompt.md) | AC-FR01-01 · test_plan · boundary RED · defect_list |
 
 ### Cursor Rules
 
@@ -164,12 +173,50 @@ MagicSquare_/
 - [x] User Journey → Scenario → Verification (Report/06)
 - [x] **PRD v1.0 Draft** · 7항목 검토 (Report/07, `docs/PRD_MagicSquare.md`)
 - [x] `pyproject.toml` · User Entity (`tests/entity/` **9 passed**)
+- [x] **테스트 플랜** (`docs/test_plan.md`, Report/08)
+- [x] **UT-01 RED** — `tests/boundary/test_ac_fr01_01_null_grid.py` (5 tests, 수집 ERROR = 의도된 RED)
+- [x] **결함 목록** (`defect_list.md`, DEF-001~006)
+- [ ] **UT-01 Green** — `src/magicsquare/boundary/` 최소 구현 (DEF-001)
+- [ ] RED 테스트 ↔ PRD SSOT 정렬 (`ERR_NULL_GRID`, `solve_partial_grid` — DEF-002·003)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
 - [ ] Mom Test · 1차 사용자 확정
-- [ ] Domain Track: **DT-01** Red부터
-- [ ] UI Track: **UT-04** Red부터 (병행)
+- [ ] Domain Track: **DT-01** Red (병행)
+- [ ] UI Track: **UT-02~08** Red (P1)
 - [ ] Data Track · 통합 테스트 (IT-OK / IT-FAIL)
+
+---
+
+## RED 단계 To-Do 리스트
+
+> 이 체크리스트는 [test_plan.md](docs/test_plan.md) 기반 — **AC-FR01-01** (`grid=None` → `ERR_NULL_GRID`, UT-01) 앵커.
+> 각 항목은 RED(실패 테스트 작성) 완료 시 체크합니다.
+
+### Track A — UI / Boundary 테스트 (P0: AC-FR01-01 / UT-01)
+- [ ] TC-A-01: grid=None 입력 → status="ERROR" 실패 결과 반환
+- [ ] TC-A-02: code가 정확히 `"ERR_NULL_GRID"` 문자열인지 검증
+- [ ] TC-A-03: message가 `"Input grid is null."` 과 문자 단위 동일한지 검증
+- [ ] TC-A-04: grid=None 시 Domain 진입점(`solve_partial_grid`) 0회 호출 (mock/spy 검증)
+- [ ] TC-A-07: 반환 객체 타입이 지정 ERROR envelope 구조체인지 검증
+
+### Track A — P1 확장 (AC-FR01-02·03 / UT-02·03)
+- [ ] TC-A-05: grid=[] 빈 리스트 → `ERR_GRID_ROWS`, Domain 0회
+- [ ] TC-A-06: grid=3×4 크기 불일치 → `ERR_GRID_ROWS`, Domain 0회
+
+### Track B — Domain / Logic 테스트 (격리)
+- [ ] TC-B-01: `solve_partial_grid`가 None grid를 직접 받지 않음을 격리 검증
+- [ ] TC-B-02: Boundary가 None 분기 처리 후 `solve_partial_grid` 미호출 확인
+- [ ] TC-B-03: `solve_partial_grid` mock이 호출됐을 경우 테스트 실패 처리
+- [ ] TC-B-04: AC-FR01-02~06 범위 케이스는 AC-FR01-01 RED 커밋에 포함하지 않음 확인
+
+### 커버리지 목표
+- [ ] Domain Logic: 95%+ (`pip install pytest-cov`)
+- [ ] Boundary Layer: 85%+
+- [ ] 전체 TOTAL: 80%+
+
+### 결함 목록 연결
+- [x] [defect_list.md](defect_list.md) 생성 및 발견 결함 기록 (DEF-001~006)
+- [ ] 모든 결함 수정 후 회귀 테스트 통과 확인
 
 ---
 
@@ -179,15 +226,46 @@ MagicSquare_/
 - **ECB harmonization** — PRD §22 DEC-01 (Judge/Solver → entity vs control)
 - **PRD 검토 보완** — AC-ID 전수 Traceability, DT-07/12 AC (Report/07 P0~P1)
 - **`pytest-cov` CI** — 커버리지 gate 미구성
+- **RED 테스트 계약 drift** — boundary 테스트 `INVALID_SIZE` vs PRD `ERR_NULL_GRID` (DEF-002)
 
 ---
 
 ## 로컬 실행
 
-```bash
+### 가상환경 (권장)
+
+```powershell
+cd c:\DEV\MagicSquare_
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
-pytest
 ```
+
+### 테스트
+
+```powershell
+# Entity만 (9 passed)
+python -m pytest tests/entity/ -v
+
+# 전체 (boundary 수집 ERROR — RED)
+python -m pytest -v
+
+# Boundary RED만
+python -m pytest tests/boundary/ -v
+```
+
+### 커버리지 HTML
+
+```powershell
+# boundary 제외 시 htmlcov 생성
+python -m pytest tests/entity/ --cov=src --cov-report=html
+start htmlcov\index.html
+
+# 또는
+python -m pytest --ignore=tests/boundary --cov=src --cov-report=html
+```
+
+> 전체 `pytest --cov=src --cov-report=html` 은 boundary 수집 실패 시 `htmlcov/`가 생기지 않을 수 있음 ([DEF-004](defect_list.md)).
 
 ---
 
