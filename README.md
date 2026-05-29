@@ -3,7 +3,7 @@
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
 Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> **현재 단계:** **GREEN 13/13** ✅ · Golden Master ✅ · **REFACTOR ①②③ 완료** (Report/17) · **72 passed** · PyQt6 GUI (`python -m magicsquare`)
+> **현재 단계:** **GREEN 13/13** ✅ · Golden Master ✅ · **REFACTOR ①②③ 완료** (Report/17) · **Ask 커버리지 QA** (Report/18) · **72 passed** · PyQt6 GUI (`python -m magicsquare`)
 
 ---
 
@@ -102,7 +102,8 @@ MagicSquare_/
 │   ├── 14-green-completion-pyqt-gui-report.md # GREEN 13/13 · PyQt GUI
 │   ├── 15-golden-master-regression-report.md  # GM-TC-01~05 · approve
 │   ├── 16-refactor-plan-ecb-analysis-report.md # REFACTOR 계획 · ECB · SRP
-│   └── 17-refactor-completion-report.md      # REFACTOR ①②③ 완료 · 72 passed
+│   ├── 17-refactor-completion-report.md      # REFACTOR ①②③ 완료 · 72 passed
+│   └── 18.MagicSquare_Ask-Coverage-QA_Report.md # Dual-Track cov 실측 · NFR gate
 └── Prompting/
     ├── 01-problem-definition-prompt.md
     ├── 02-tdd-design-prompt.md
@@ -120,7 +121,8 @@ MagicSquare_/
     ├── 14-green-completion-pyqt-gui-prompt.md
     ├── 15-golden-master-regression-prompt.md
     ├── 16-refactor-plan-ecb-analysis-prompt.md
-    └── 17-refactor-completion-prompt.md
+    ├── 17-refactor-completion-prompt.md
+    └── 18.MagicSquare_Ask-Coverage-QA_Prompt_Transcript.md
 ```
 
 ---
@@ -147,6 +149,7 @@ MagicSquare_/
 | [Golden Master 회귀 안전장치](Report/15-golden-master-regression-report.md) | GM-01~10 · approve 패턴 · GM-TC-01~05 |
 | [REFACTOR 계획 · ECB 분석](Report/16-refactor-plan-ecb-analysis-report.md) | Control envelope · facade · GUI 테스트 갭 · P0/P1 |
 | [REFACTOR 완료](Report/17-refactor-completion-report.md) | ①②③ 구현 · 72 passed · DEF-002/003 해소 |
+| [Ask Dual-Track 커버리지 QA](Report/18.MagicSquare_Ask-Coverage-QA_Report.md) | NFR gate 실측 · Domain 94% · Boundary 91% · TC backlog |
 
 ### 설계·규칙·에이전트
 
@@ -178,6 +181,7 @@ MagicSquare_/
 | [15 Golden Master 회귀](Prompting/15-golden-master-regression-prompt.md) | GM baseline · approve · GM-TC-01~05 Export |
 | [16 REFACTOR 계획 · ECB](Prompting/16-refactor-plan-ecb-analysis-prompt.md) | 스멜·ECB·SRP 분석 · Refactor 계획 Export |
 | [17 REFACTOR 완료](Prompting/17-refactor-completion-prompt.md) | ①②③ 구현 · GitHub push · Report/17 Export |
+| [18 Ask 커버리지 QA](Prompting/18.MagicSquare_Ask-Coverage-QA_Prompt_Transcript.md) | Dual-Track cov 실측 · Report/18 Export |
 
 ### Cursor Rules
 
@@ -236,6 +240,7 @@ MagicSquare_/
 - [x] REFACTOR ② 테스트·안전 — Control/Boundary/GUI 회귀 테스트 · Guard · fixture
 - [x] REFACTOR ③ 구조·유지보수 — presenter · DI · UI DRY (P1/P2)
 - [x] **REFACTOR 완료 보고서** — Report/17 · 72 passed · GM PASS
+- [x] **Ask Dual-Track 커버리지 QA** — Report/18 · NFR gate 실측 (production 변경 없음)
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
 - [ ] Mom Test · 1차 사용자 확정
@@ -270,7 +275,7 @@ MagicSquare_/
 | `tests/integration/` | **12 passed** | I-01~I-02 + Golden Master ✅ |
 | **전체 suite** | **72 passed** | Green 13/13 + GM + REFACTOR ①②③ ✅ |
 
-**Green 13/13 + Golden Master + REFACTOR ①②③ 완료** — 후속: 커버리지 CI gate · PRD v1.1 ([Report/17](Report/17-refactor-completion-report.md)).
+**Green 13/13 + Golden Master + REFACTOR ①②③ 완료** — 후속: Domain cov 95% TC 보강 · `pytest-cov` CI · PRD v1.1 ([Report/17](Report/17-refactor-completion-report.md) · [Report/18](Report/18.MagicSquare_Ask-Coverage-QA_Report.md)).
 
 ---
 
@@ -330,10 +335,26 @@ MagicSquare_/
 - [x] TC-B-01~03: null 입력 Domain 미진입 *(A-01 `resolve` mock — DEF-003 drift: `resolve` vs `solve_partial_grid`)*
 - [x] TC-B-04: AC-FR01-02~06 UT-01 RED 범위 외 확인
 
-### 커버리지 목표
-- [ ] Domain Logic: 95%+ (`pip install pytest-cov`)
-- [ ] Boundary Layer: 85%+
-- [ ] 전체 TOTAL: 80%+
+### 커버리지 목표 (Report/18 실측, 2026-05-29)
+
+| 레이어 | 실측 | Gate | 판정 |
+|--------|------|------|------|
+| Domain (`entity`+`control`, IT 포함) | **94%** | ≥ 95% | ❌ |
+| Boundary (전체) | **91%** | ≥ 85% | ✅ |
+| 전역 (`src/`) | **91%** | ≥ 80% | ✅ |
+
+```powershell
+# SSOT 경로 (docs/test_plan.md §9.3)
+python -m pytest tests/entity/ tests/control/ tests/integration/ `
+  --cov=src/magicsquare/entity --cov=src/magicsquare/control --cov-report=term-missing -q
+python -m pytest tests/boundary/ --cov=src/magicsquare/boundary --cov-report=term-missing -q
+python -m pytest --cov=src --cov-report=term-missing -q
+```
+
+- [ ] Domain Logic: **95%+** (현재 94% — D-VAL·D-SOL TC 보강)
+- [x] Boundary Layer: **85%+** (91%)
+- [x] 전체 TOTAL: **80%+** (91%)
+- [ ] `pytest-cov` CI gate (`--cov-fail-under`)
 
 ### 결함 목록 연결
 - [x] [defect_list.md](defect_list.md) 생성 및 발견 결함 기록 (DEF-001~006)
@@ -440,9 +461,10 @@ MagicSquare_/
 - [x] **Domain Core Green** — B-01~B-03 완료
 - [x] **성공 경로 Green** — A-08 완료
 - [x] **Integration Green** — I-01~I-02 완료
-- [ ] Boundary 레이어 커버리지 **85%+**
-- [ ] Domain Logic 커버리지 **95%+**
+- [x] Boundary 레이어 커버리지 **85%+** (91%, Report/18)
+- [ ] Domain Logic 커버리지 **95%+** (94% IT 포함, Report/18)
 - [x] 전체 pytest 회귀 통과: `python -m pytest -v` → **72 passed** (GM 포함)
+- [x] 전역 커버리지 **80%+** (91%, Report/18)
 
 ### Green 진행 흐름
 
@@ -464,7 +486,7 @@ A-08 SUCCESS ✅ ◄──────────────┘
       PyQt6 GUI (optional)
          │
          ▼
-      Golden Master ✅ → REFACTOR ①②③ 완료 (Report/17)
+      Golden Master ✅ → REFACTOR ①②③ (Report/17) → Ask cov QA (Report/18)
 ```
 
 ---
@@ -473,7 +495,7 @@ A-08 SUCCESS ✅ ◄──────────────┘
 
 > **전제:** `.cursorrules` refactor_phase — observable behavior·E001~E007·int[6] 불변 · pytest PASS 유지.  
 > 계획: [Report/16](Report/16-refactor-plan-ecb-analysis-report.md) · 완료: [Report/17](Report/17-refactor-completion-report.md) · Transcript: [Prompting/17](Prompting/17-refactor-completion-prompt.md)  
-> **①②③ 구현 완료** — 잔여: 커버리지 CI · offscreen smoke(수동)
+> **①②③ 구현 완료** — 잔여: Domain cov 95% · `pytest-cov` CI · offscreen smoke(수동) · [Report/18](Report/18.MagicSquare_Ask-Coverage-QA_Report.md)
 
 ### ① 레이어 · 계약 (ECB · SSOT)
 
@@ -504,7 +526,8 @@ A-08 SUCCESS ✅ ◄──────────────┘
 - [x] `python -m pytest tests/ -q` → **72 passed**
 - [x] `pytest -m golden_master` → baseline diff 없음 (6 passed)
 - [x] `solve_partial_magic_square.py` → `magicsquare.boundary` import **0건**
-- [ ] 커버리지: boundary ≥85% · entity ≥95% · 전체 ≥80% (CI 미구성)
+- [x] 커버리지 실측 (Report/18): boundary **91%** ✅ · Domain **94%** ❌ · 전체 **91%** ✅
+- [ ] `pytest-cov` CI gate (`--cov-fail-under`) 미구성
 - [ ] `QT_QPA_PLATFORM=offscreen python -m magicsquare` smoke PASS (수동)
 
 **Entity `two_cell_solver` — Refactor 범위 제외** (ECB 위치 적합).
@@ -516,10 +539,13 @@ A-08 SUCCESS ✅ ◄──────────────┘
 - **1차 사용자** — Mom Test 미완 (PRD Persona: TDD 학습자로 가정)
 - **ECB harmonization** — PRD §22 DEC-01 (Judge/Solver → entity vs control)
 - **PRD 검토 보완** — AC-ID 전수 Traceability, DT-07/12 AC (Report/07 P0~P1)
-- **`pytest-cov` CI** — 커버리지 gate 미구성
+- **`pytest-cov` CI** — 커버리지 gate 미구성 ([Report/18](Report/18.MagicSquare_Ask-Coverage-QA_Report.md) §7)
+- **Domain cov 95%** — 94% (IT 포함); D-VAL 열/대각·D-SOL forward TC 보강 필요
+- **GM 경로** — `test_gm_01_*.py` 없음; 실경로 `tests/integration/test_golden_master_magic_square.py`
 - **DEF-001** — **해소** — boundary · control · data · integration · gui
 - **DEF-002·003** — **해소** (REFACTOR ① — `ERR_NULL_GRID` SSOT · `execute` mock · `response_mapper`)
-- **REFACTOR ①②③** — **완료** ([Report/17](Report/17-refactor-completion-report.md)) · 커버리지 CI 후속
+- **REFACTOR ①②③** — **완료** ([Report/17](Report/17-refactor-completion-report.md))
+- **Ask 커버리지 QA** — **완료** ([Report/18](Report/18.MagicSquare_Ask-Coverage-QA_Report.md))
 
 ---
 
