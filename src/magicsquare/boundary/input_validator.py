@@ -7,6 +7,8 @@ from magicsquare.boundary.schemas import (
     ERR_GRID_COLS_MESSAGE,
     ERR_GRID_ROWS_CODE,
     ERR_GRID_ROWS_MESSAGE,
+    ERR_VALUE_RANGE_CODE,
+    ERR_VALUE_RANGE_MESSAGE,
     INVALID_SIZE_CODE,
     INVALID_SIZE_MESSAGE,
     FailureResponse,
@@ -47,4 +49,12 @@ class InputValidator:
                     code=ERR_GRID_COLS_CODE,
                     message=ERR_GRID_COLS_MESSAGE,
                 )
+        for row in grid:
+            for cell in row:
+                if cell != 0 and not 1 <= cell <= 16:
+                    return FailureResponse(
+                        status="ERROR",
+                        code=ERR_VALUE_RANGE_CODE,
+                        message=ERR_VALUE_RANGE_MESSAGE,
+                    )
         return None
