@@ -3,7 +3,7 @@
 4×4 마방진을 다루는 학습·실험 프로젝트입니다.  
 Cursor AI와 협업하며 **문제 정의 → 규칙 고정 → PRD → 검증 가능한 구현** 순서로 개발 역량을 기릅니다.
 
-> **현재 단계:** **GREEN 13/13 완료** ✅ · Golden Master **60 passed** · **REFACTOR 계획 수립** (Report/16) · **PyQt6 GUI** (`python -m magicsquare`)
+> **현재 단계:** **GREEN 13/13** ✅ · Golden Master ✅ · **REFACTOR ①②③ 완료** (Report/17) · **72 passed** · PyQt6 GUI (`python -m magicsquare`)
 
 ---
 
@@ -74,13 +74,15 @@ MagicSquare_/
 ├── .venv/                                 # 로컬 가상환경 (gitignore)
 ├── src/magicsquare/                       # Python ECB
 │   ├── entity/                            # Domain services · user
-│   ├── boundary/                          # validator · ui_boundary · gui (PyQt6)
+│   ├── boundary/                          # validator · response_mapper · gui
 │   ├── control/                           # SolvePartialMagicSquare · use case
 │   └── data/                              # InMemoryMatrixRepository
 ├── tests/
-│   ├── conftest.py                        # G0~G3 placeholder (주석)
+│   ├── conftest.py                        # UT-09 fixture · golden_master marker
 │   ├── entity/                            # 21 passed (B-01~B-03 + user)
-│   ├── boundary/                          # 27 passed (A-01~A-08)
+│   ├── control/                           # solve_partial execute (REFACTOR ②)
+│   ├── boundary/                          # A-01~A-08 + ui_boundary · presenter
+│   │   └── gui/                           # offscreen MainWindow tests
 │   ├── integration/                       # 12 passed (I-01~I-02 + GM-TC)
 │   └── golden_master/                     # GM baseline · approve
 ├── Report/
@@ -99,7 +101,8 @@ MagicSquare_/
 │   ├── 13-green-phase-readme-plan-report.md # GREEN 묶음 · README To-Do
 │   ├── 14-green-completion-pyqt-gui-report.md # GREEN 13/13 · PyQt GUI
 │   ├── 15-golden-master-regression-report.md  # GM-TC-01~05 · approve
-│   └── 16-refactor-plan-ecb-analysis-report.md # REFACTOR 계획 · ECB · SRP
+│   ├── 16-refactor-plan-ecb-analysis-report.md # REFACTOR 계획 · ECB · SRP
+│   └── 17-refactor-completion-report.md      # REFACTOR ①②③ 완료 · 72 passed
 └── Prompting/
     ├── 01-problem-definition-prompt.md
     ├── 02-tdd-design-prompt.md
@@ -116,7 +119,8 @@ MagicSquare_/
     ├── 13-green-phase-readme-plan-prompt.md
     ├── 14-green-completion-pyqt-gui-prompt.md
     ├── 15-golden-master-regression-prompt.md
-    └── 16-refactor-plan-ecb-analysis-prompt.md
+    ├── 16-refactor-plan-ecb-analysis-prompt.md
+    └── 17-refactor-completion-prompt.md
 ```
 
 ---
@@ -142,6 +146,7 @@ MagicSquare_/
 | [GREEN 13/13 · PyQt GUI](Report/14-green-completion-pyqt-gui-report.md) | A-07~I-02 완료 · PyQt6 · ECB Control/Data |
 | [Golden Master 회귀 안전장치](Report/15-golden-master-regression-report.md) | GM-01~10 · approve 패턴 · GM-TC-01~05 |
 | [REFACTOR 계획 · ECB 분석](Report/16-refactor-plan-ecb-analysis-report.md) | Control envelope · facade · GUI 테스트 갭 · P0/P1 |
+| [REFACTOR 완료](Report/17-refactor-completion-report.md) | ①②③ 구현 · 72 passed · DEF-002/003 해소 |
 
 ### 설계·규칙·에이전트
 
@@ -172,6 +177,7 @@ MagicSquare_/
 | [14 GREEN 완료·PyQt GUI](Prompting/14-green-completion-pyqt-gui-prompt.md) | A-07~I-02 · PyQt6 GUI Export |
 | [15 Golden Master 회귀](Prompting/15-golden-master-regression-prompt.md) | GM baseline · approve · GM-TC-01~05 Export |
 | [16 REFACTOR 계획 · ECB](Prompting/16-refactor-plan-ecb-analysis-prompt.md) | 스멜·ECB·SRP 분석 · Refactor 계획 Export |
+| [17 REFACTOR 완료](Prompting/17-refactor-completion-prompt.md) | ①②③ 구현 · GitHub push · Report/17 Export |
 
 ### Cursor Rules
 
@@ -229,6 +235,7 @@ MagicSquare_/
 - [x] REFACTOR ① 레이어·계약 — envelope · facade · E001/MagicConstant SSOT (DEF-002·003)
 - [x] REFACTOR ② 테스트·안전 — Control/Boundary/GUI 회귀 테스트 · Guard · fixture
 - [x] REFACTOR ③ 구조·유지보수 — presenter · DI · UI DRY (P1/P2)
+- [x] **REFACTOR 완료 보고서** — Report/17 · 72 passed · GM PASS
 - [ ] DEC-01: ECB 레이어 배치 확정 (Report/02 ↔ PRD)
 - [ ] PRD v1.1 (AC-ID Matrix, Layer 용어 통일)
 - [ ] Mom Test · 1차 사용자 확정
@@ -263,14 +270,14 @@ MagicSquare_/
 | `tests/integration/` | **12 passed** | I-01~I-02 + Golden Master ✅ |
 | **전체 suite** | **72 passed** | Green 13/13 + GM + REFACTOR ①②③ ✅ |
 
-**Green 13/13 + Golden Master 완료** — REFACTOR 구현(P0) · 커버리지 gate · DEF-002 SSOT는 후속 ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md)).
+**Green 13/13 + Golden Master + REFACTOR ①②③ 완료** — 후속: 커버리지 CI gate · PRD v1.1 ([Report/17](Report/17-refactor-completion-report.md)).
 
 ---
 
 ## RED 단계 To-Do 리스트
 
 > RED Skeleton 21건 + UT-01 Full RED. UT-01은 **Green 완료(A-01)** — 아래 UT-01 항목은 RED 작성 완료로 체크.
-> Error code/message는 테스트 `INVALID_SIZE` vs PRD `ERR_NULL_GRID` **drift** (DEF-002) — SSOT 통일 전 Green 진행 중.
+> DEF-002 (`ERR_NULL_GRID`) — **해소** (REFACTOR ①, Report/17).
 
 ### Golden Master 회귀 안전장치
 
@@ -457,7 +464,7 @@ A-08 SUCCESS ✅ ◄──────────────┘
       PyQt6 GUI (optional)
          │
          ▼
-      Golden Master ✅ → REFACTOR 계획 (Report/16)
+      Golden Master ✅ → REFACTOR ①②③ 완료 (Report/17)
 ```
 
 ---
@@ -465,8 +472,8 @@ A-08 SUCCESS ✅ ◄──────────────┘
 ## REFACTOR 단계 To-Do 리스트
 
 > **전제:** `.cursorrules` refactor_phase — observable behavior·E001~E007·int[6] 불변 · pytest PASS 유지.  
-> 상세: [Report/16](Report/16-refactor-plan-ecb-analysis-report.md) · Transcript: [Prompting/16](Prompting/16-refactor-plan-ecb-analysis-prompt.md)  
-> **권장 순서:** ② 테스트 Green → ① 레이어·계약 P0 → ③ 구조·유지보수 P1/P2 → 완료 게이트
+> 계획: [Report/16](Report/16-refactor-plan-ecb-analysis-report.md) · 완료: [Report/17](Report/17-refactor-completion-report.md) · Transcript: [Prompting/17](Prompting/17-refactor-completion-prompt.md)  
+> **①②③ 구현 완료** — 잔여: 커버리지 CI · offscreen smoke(수동)
 
 ### ① 레이어 · 계약 (ECB · SSOT)
 
@@ -494,11 +501,11 @@ A-08 SUCCESS ✅ ◄──────────────┘
 
 ### Refactor 완료 게이트
 
-- [ ] `python -m pytest tests/ -q` → 0 failed
-- [ ] `pytest -m golden_master` → baseline diff 없음
-- [ ] `rg "from magicsquare.boundary" src/magicsquare/control/` → 0건
-- [ ] 커버리지: boundary ≥85% · entity ≥95% · 전체 ≥80%
-- [ ] `QT_QPA_PLATFORM=offscreen python -m magicsquare` smoke PASS
+- [x] `python -m pytest tests/ -q` → **72 passed**
+- [x] `pytest -m golden_master` → baseline diff 없음 (6 passed)
+- [x] `solve_partial_magic_square.py` → `magicsquare.boundary` import **0건**
+- [ ] 커버리지: boundary ≥85% · entity ≥95% · 전체 ≥80% (CI 미구성)
+- [ ] `QT_QPA_PLATFORM=offscreen python -m magicsquare` smoke PASS (수동)
 
 **Entity `two_cell_solver` — Refactor 범위 제외** (ECB 위치 적합).
 
@@ -512,7 +519,7 @@ A-08 SUCCESS ✅ ◄──────────────┘
 - **`pytest-cov` CI** — 커버리지 gate 미구성
 - **DEF-001** — **해소** — boundary · control · data · integration · gui
 - **DEF-002·003** — **해소** (REFACTOR ① — `ERR_NULL_GRID` SSOT · `execute` mock · `response_mapper`)
-- **REFACTOR ①②③** — **완료** · 완료 게이트(커버리지 CI) 후속 ([Report/16](Report/16-refactor-plan-ecb-analysis-report.md))
+- **REFACTOR ①②③** — **완료** ([Report/17](Report/17-refactor-completion-report.md)) · 커버리지 CI 후속
 
 ---
 

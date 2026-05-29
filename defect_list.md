@@ -14,11 +14,11 @@
 
 | Severity | Open | Closed |
 |---|---|---|
-| Critical | 1 | 0 |
-| High | 2 | 0 |
+| Critical | 0 | 1 |
+| High | 0 | 2 |
 | Medium | 2 | 0 |
 | Low | 1 | 0 |
-| **Total** | **6** | **0** |
+| **Total** | **3** | **3** |
 
 ---
 
